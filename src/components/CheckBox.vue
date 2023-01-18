@@ -1,17 +1,24 @@
 <template>
   <div>
-    <label>
-      <input 
-        type="checkbox" 
-        name="tasks" 
-        :value="title" 
-        :checked="doneTask"
-        @input="$emit('taskDone')"
-      >
-      {{ title }}
-    </label>
-    <button @click="$emit('delete')">Delete</button>
-    {{  doneTask  }}
+    <v-row justify="center">
+      <v-col cols="1">
+        <v-checkbox 
+          :input-value="doneTask" 
+          @change="$emit('taskDone')"
+          color="success"
+        >
+        </v-checkbox>
+      </v-col>
+      <v-col cols="9">
+        <v-text-field
+          outlined 
+          :value="title"
+          @focus="$emit('selectItemInput')"
+        >
+        </v-text-field>
+      </v-col>
+     
+    </v-row>
   </div>
 </template>
 

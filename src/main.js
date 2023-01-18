@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { typeDefs, resolvers } from './resolvers';
 import { persistCache } from 'apollo-cache-persist';
+import vuetify from './plugins/vuetify'
 
 Vue.use(VueApollo);
 
@@ -39,5 +40,6 @@ const apolloProvider = new VueApollo({
 
 new Vue({
   render: h => h(App),
-  apolloProvider,
+  vuetify,
+  apolloProvider
 }).$mount('#app')

@@ -6,7 +6,6 @@
 
 <script>
 import { todoItemsQuery } from '../graphql/queries';
-
 export default {
   name: 'HelloWorld',
   apollo: {
@@ -19,5 +18,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 </style>
