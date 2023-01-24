@@ -32,3 +32,10 @@ export const addItemMutation = gql`
     }
   }
 `;
+export const saveTaskMutation = gql`
+  mutation($task: Task!, $id: ID!) {
+    saveTask(task: $task, id: $id) @client {
+      task
+    }
+  }
+`;

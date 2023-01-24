@@ -14,7 +14,7 @@
           outlined 
           :value="title"
           @focus="$emit('selectItemInput')"
-          @change="changeTextTitle($event.target.value)"
+          @input="$emit('changeTitle', $event)"
         >
         </v-text-field>
       </v-col>
@@ -34,14 +34,11 @@ export default {
   },
   data() {
     return {
-      newTitle: ''
+     
     }
   },
   methods: {
-    changeTextTitle(value) {
-      this.newTitle = value;
-      $emit('changeTitle', this.newTitle);
-    }
+
   }
 }
 </script>

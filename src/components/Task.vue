@@ -27,7 +27,7 @@
             <v-textarea
               outlined
               no-resize
-              value="Задание 1"
+              v-model="oneTask.name"
             >    
             </v-textarea>
           </v-col>
@@ -70,17 +70,17 @@
             </v-card-actions>
           </v-col>
         </v-row>
-        <CheckBox v-for="(item, index) in task"
+        <CheckBox v-for="(item, index) in oneTask.todoItems"
           :key="index"
-          :title="item.todoItems.text"
-          :doneTask="item.todoItems.done"
-          :id="item.todoItems.id"
-          @selectItemInput="selectItem(item.todoItems.id)"
-          @taskDone="checkItem(item.todoItems.id)"
-          @changeTitle="changeTextTitle()"
+          :title="item.text"
+          :doneTask="item.done"
+          :id="item.id"
+          @selectItemInput="selectItem(item.id)"
+          @taskDone="checkItem(item)"
+          @changeTitle="changeTextTitle(item, $event)"
         >
         </CheckBox>
-        {{ task }}
+     
         <v-card-actions>
           <v-row>
             <v-col
@@ -104,8 +104,9 @@
                 </v-icon>
               </v-btn>
               <v-btn
-              color="green"
-              class="white--text mr-3"
+                color="green"
+                class="white--text mr-3"
+                @click="saveChanges(oneTask, oneTask.id)"
               >
                 Сохранить
               </v-btn>
@@ -130,12 +131,17 @@ import {
     checkItemMutation, 
     deleteItemMutation,
     addItemMutation,
+    saveTaskMutation,
   } from '../graphql/queries';
+import shortid from 'shortid';
 
 export default {
   name: 'Task',
   components: {
     CheckBox,
+  },
+  props: {
+    oneTask: Object, 
   },
   apollo: {
     task: {
@@ -151,30 +157,34 @@ export default {
     selectItem(id) {
       this.selectedItemId = id;
     },  
-    checkItem(id) {
-      this.$apollo.mutate({
-        mutation: checkItemMutation,
-        variables: { id }
-      });
+    checkItem(checkBoxTask) {
+      checkBoxTask.done = !checkBoxTask.done;
     },
     deleteItem(id) {
       if (id !== null) {
-        this.$apollo.mutate({
-          mutation: deleteItemMutation,
-          variables: { id }
-        });
+        const currentItem = this.oneTask.todoItems.find(item => item.id === id);
+        this.oneTask.todoItems.splice(this.oneTask.todoItems.indexOf(currentItem), 1);
         this.selectedItemId = null;
       };
     },
     addItem() {
+      const newItem = {
+        __typename: 'Item',
+        id: shortid.generate(),
+        text: 'Введите задачу',
+        done: false,
+      };
+      this.oneTask.todoItems.push(newItem);
+    },
+    changeTextTitle(checkBoxTask, titleText) {
+      checkBoxTask.text = titleText;
+    },
+    saveChanges(taskForSave, taskId) {
       this.$apollo.mutate({
-        mutation: addItemMutation,
-        variables: { text: "Введите задачу" }
+        mutation: saveTaskMutation,
+        variables: {taskForSave, taskId},
       });
-    },
-    changeTextTitle(valueTask) {
-      this.title = valueTask;
-    },
+    }
   },
 }
 </script>

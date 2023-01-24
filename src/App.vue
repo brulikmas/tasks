@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <Task v-for="(item, index) in task">
+    <Task v-for="(item, index) in task"
+      :oneTask="item"
+    >
       
     </Task>
   </v-app>
