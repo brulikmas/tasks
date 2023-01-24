@@ -29,7 +29,19 @@ const check = localStorage.getItem('apollo-cache-persist');
 if (check === null) {
   cache.writeData({
     data: {
-      todoItems: [],
+      task: [
+        {
+          __typename: 'Task',
+          id: '1',
+          name: 'Задание 1',
+          todoItems: [{
+            __typename: 'Item',
+            id: '1',
+            text: 'задача 1',
+            done: false,
+          }],
+        }
+      ],
     },
   })
 }

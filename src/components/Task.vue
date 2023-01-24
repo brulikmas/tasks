@@ -4,9 +4,7 @@
       class="mx-auto"
       max-width="1000"
     >
-      <v-card-title
-        
-      >
+      <v-card-title >
         Редактирование задания
         <v-spacer></v-spacer>
         <v-card-actions>
@@ -21,7 +19,7 @@
         </v-card-actions>
       </v-card-title>
       <v-container fluid>
-        <v-row>
+        <v-row> 
           <v-col cols="2">
             <v-subheader>Задание:</v-subheader>
           </v-col>
@@ -30,8 +28,7 @@
               outlined
               no-resize
               value="Задание 1"
-            >
-            
+            >    
             </v-textarea>
           </v-col>
         </v-row>
@@ -73,16 +70,53 @@
             </v-card-actions>
           </v-col>
         </v-row>
-        <CheckBox v-for="(item, index) in todoItems"
-        :key="index"
-        :title="item.text"
-        :doneTask="item.done"
-        :id="item.id"
-        @selectItemInput="selectItem(item.id)"
-        @taskDone="checkItem(item.id)"
+        <CheckBox v-for="(item, index) in task"
+          :key="index"
+          :title="item.todoItems.text"
+          :doneTask="item.todoItems.done"
+          :id="item.todoItems.id"
+          @selectItemInput="selectItem(item.todoItems.id)"
+          @taskDone="checkItem(item.todoItems.id)"
+          @changeTitle="changeTextTitle()"
         >
-
-      </CheckBox>
+        </CheckBox>
+        {{ task }}
+        <v-card-actions>
+          <v-row>
+            <v-col
+              cols="4"
+              class="px-0"
+              offset-md="7"
+            >
+              <v-btn
+                icon
+              >
+                <v-icon>
+                  mdi-undo-variant
+                </v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="mr-3"
+              >
+                <v-icon>
+                  mdi-redo-variant
+                </v-icon>
+              </v-btn>
+              <v-btn
+              color="green"
+              class="white--text mr-3"
+              >
+                Сохранить
+              </v-btn>
+              <v-btn
+                
+              >
+                Отмена
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-actions>
       </v-container>
     </v-card>
   </div>
@@ -104,7 +138,7 @@ export default {
     CheckBox,
   },
   apollo: {
-    todoItems: {
+    task: {
       query: todoItemsQuery,
     }
   },
@@ -137,7 +171,10 @@ export default {
         mutation: addItemMutation,
         variables: { text: "Введите задачу" }
       });
-    }
+    },
+    changeTextTitle(valueTask) {
+      this.title = valueTask;
+    },
   },
 }
 </script>

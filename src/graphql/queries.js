@@ -2,10 +2,14 @@ import gql from 'graphql-tag'
 
 export const todoItemsQuery = gql`
   {
-    todoItems @client {
+    task @client {
       id
-      text
-      done
+      name
+      todoItems {
+        id
+        text
+        done
+      }
     }
   }
 `;

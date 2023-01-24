@@ -8,6 +8,11 @@ export const typeDefs = gql`
     text: String!
     done: Boolean!
   }
+  type Task {
+    id: ID!
+    name: String!
+    item: Item
+  }
 
   type Mutation {
     checkItem(id: ID!): Boolean
@@ -19,16 +24,16 @@ export const resolvers = {
   Mutation: {
     checkItem: (_, { id }, { cache }) => {
       const data = cache.readQuery({ query: todoItemsQuery});
-      const currentItem = data.todoItems.find(item => item.id === id);
+      const currentItem = data.task.todoItems.find(item => item.id === id);
       currentItem.done = !currentItem.done;
-      cache.writeQuery({ query: todoItemsQuery, data});
+      //cache.writeQuery({ query: todoItemsQuery, data});
       return currentItem.done;
     },
     deleteItem: (_, { id }, { cache }) => {
       const data = cache.readQuery({ query: todoItemsQuery });
-      const currentItem = data.todoItems.find(item => item.id === id);
-      data.todoItems.splice(data.todoItems.indexOf(currentItem), 1);
-      cache.writeQuery({ query: todoItemsQuery, data });
+      const currentItem = data.task.todoItems.find(item => item.id === id);
+      data.task.todoItems.splice(data.task.todoItems.indexOf(currentItem), 1);
+      //cache.writeQuery({ query: todoItemsQuery, data });
       return true
     },
     addItem: (_, { text }, { cache }) => {
@@ -39,8 +44,8 @@ export const resolvers = {
         text,
         done: false,
       };
-      data.todoItems.push(newItem);
-      cache.writeQuery({ query: todoItemsQuery, data });
+      data.task.todoItems.push(newItem);
+      //cache.writeQuery({ query: todoItemsQuery, data });
       return newItem;
     }
   }

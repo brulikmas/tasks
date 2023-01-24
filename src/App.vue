@@ -1,9 +1,8 @@
 <template>
   <v-app>
-    <Task>
-
+    <Task v-for="(item, index) in task">
+      
     </Task>
-    
   </v-app>
 </template>
 
@@ -11,9 +10,6 @@
   import Task from './components/Task.vue'
   import { 
     todoItemsQuery, 
-    checkItemMutation, 
-    deleteItemMutation,
-    addItemMutation,
   } from './graphql/queries';
   export default {
     name: 'App',
@@ -21,7 +17,7 @@
       Task,
     },
     apollo: {
-      todoItems: {
+      task: {
         query: todoItemsQuery,
       }
     },
