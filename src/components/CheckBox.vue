@@ -14,7 +14,7 @@
           outlined 
           :value="title"
           @focus="$emit('selectItemInput')"
-          @input="$emit('changeTitle', $event)"
+          @change="$emit('changeTitle', $event)"
         >
         </v-text-field>
       </v-col>

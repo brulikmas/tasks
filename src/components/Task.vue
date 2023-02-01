@@ -27,7 +27,8 @@
             <v-textarea
               outlined
               no-resize
-              v-model="oneTask.name"
+              :value="oneTask.name"
+              @change="changeTaskTitle($event)"
             >    
             </v-textarea>
           </v-col>
@@ -80,6 +81,8 @@
           @changeTitle="changeTextTitle(item, $event)"
         >
         </CheckBox>
+        {{ oneTask }}
+        <h3>Действия</h3> {{ changeActionsArray }}
      
         <v-card-actions>
           <v-row>
@@ -90,6 +93,7 @@
             >
               <v-btn
                 icon
+                @click="cancelLastChange()"
               >
                 <v-icon>
                   mdi-undo-variant
@@ -98,6 +102,7 @@
               <v-btn
                 icon
                 class="mr-3"
+                @click="repeatLastChange()"
               >
                 <v-icon>
                   mdi-redo-variant
@@ -128,9 +133,6 @@
 import CheckBox from './CheckBox.vue';
 import { 
     todoItemsQuery, 
-    checkItemMutation, 
-    deleteItemMutation,
-    addItemMutation,
     saveTaskMutation,
   } from '../graphql/queries';
 import shortid from 'shortid';
@@ -143,17 +145,35 @@ export default {
   props: {
     oneTask: Object, 
   },
-  apollo: {
-    task: {
-      query: todoItemsQuery,
-    }
-  },
   data() {
     return {
       selectedItemId: null,
+      actionsArray: [],
+      posForAdd: 0,
     }
   },
+  computed: {
+    deleteCountElements() {
+      let arrayLength = this.actionsArray.length;
+      this.posForAdd = arrayLength + 1;
+      let deleteCount = arrayLength - this.posForAdd - 1;
+      console.log(this.posForAdd);
+      return deleteCount;
+    },
+    changeActionsArray() {
+      let addNewElement = {...this.oneTask};
+      addNewElement.todoItems = [...this.oneTask.todoItems];
+      for (let i = 0; i < addNewElement.todoItems.length; i++) {
+        addNewElement.todoItems[i] = {...this.oneTask.todoItems[i]};
+      };
+      this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
+      return this.actionsArray;
+    },
+  },
   methods: {
+    changeTaskTitle(titleTaskValue) {
+      this.oneTask.name = titleTaskValue;
+    },
     selectItem(id) {
       this.selectedItemId = id;
     },  
@@ -179,12 +199,20 @@ export default {
     changeTextTitle(checkBoxTask, titleText) {
       checkBoxTask.text = titleText;
     },
+    cancelLastChange() {
+      this.posForAdd -= 1;
+      this.oneTask = this.actionsArray[this.posForAdd - 1];
+    },
+    repeatLastChange() {
+      this.posForAdd +=1;
+      this.oneTask = this.actionsArray[this.posForAdd - 1];
+    },
     saveChanges(taskForSave, taskId) {
       this.$apollo.mutate({
         mutation: saveTaskMutation,
         variables: {taskForSave, taskId},
       });
-    }
+    },
   },
 }
 </script>

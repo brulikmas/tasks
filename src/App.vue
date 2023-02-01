@@ -19,14 +19,20 @@
       Task,
     },
     apollo: {
-      task: {
-        query: todoItemsQuery,
+      task() {
+        return {
+          query: todoItemsQuery,
+        }
       }
     },
     data() {
       return {
-        newItem: '',
+        
       }
+    },
+    updated() {
+      this.$apollo.queries.task.skip = true;
+      console.log('skiped')
     },
   }
 </script>
