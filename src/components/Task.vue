@@ -82,7 +82,9 @@
         >
         </CheckBox>
         {{ oneTask }}
-        <h3>Действия</h3> {{ changeActionsArray }}
+        <h3>Действия</h3> {{ actionsArray }}
+        <h3>C какой позиции добавляем</h3>{{ posForAdd }}
+        <h3>Количество удаляемых</h3>{{ deleteCountElements }}
      
         <v-card-actions>
           <v-row>
@@ -152,39 +154,52 @@ export default {
       posForAdd: 0,
     }
   },
+  mounted() {
+    this.changeActionsArray();
+  },
   computed: {
     deleteCountElements() {
       let arrayLength = this.actionsArray.length;
-      this.posForAdd = arrayLength + 1;
-      let deleteCount = arrayLength - this.posForAdd - 1;
-      console.log(this.posForAdd);
+      let deleteCount = arrayLength - this.posForAdd;
       return deleteCount;
     },
+  },
+  methods: {
     changeActionsArray() {
+      console.log('Вызвал');
       let addNewElement = {...this.oneTask};
       addNewElement.todoItems = [...this.oneTask.todoItems];
       for (let i = 0; i < addNewElement.todoItems.length; i++) {
         addNewElement.todoItems[i] = {...this.oneTask.todoItems[i]};
       };
-      this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
-      return this.actionsArray;
+      if (this.posForAdd === this.actionsArray.length) {
+        this.posForAdd += 1;
+        this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
+        //console.log(addNewElement);
+      }
+      else {
+        this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
+        //console.log(addNewElement);
+        this.posForAdd += 1;
+      }
     },
-  },
-  methods: {
     changeTaskTitle(titleTaskValue) {
       this.oneTask.name = titleTaskValue;
+      this.changeActionsArray();
     },
     selectItem(id) {
       this.selectedItemId = id;
     },  
     checkItem(checkBoxTask) {
       checkBoxTask.done = !checkBoxTask.done;
+      this.changeActionsArray();
     },
     deleteItem(id) {
       if (id !== null) {
         const currentItem = this.oneTask.todoItems.find(item => item.id === id);
         this.oneTask.todoItems.splice(this.oneTask.todoItems.indexOf(currentItem), 1);
         this.selectedItemId = null;
+        this.changeActionsArray();
       };
     },
     addItem() {
@@ -195,17 +210,25 @@ export default {
         done: false,
       };
       this.oneTask.todoItems.push(newItem);
+      this.changeActionsArray();
     },
     changeTextTitle(checkBoxTask, titleText) {
       checkBoxTask.text = titleText;
+      this.changeActionsArray();
     },
     cancelLastChange() {
-      this.posForAdd -= 1;
-      this.oneTask = this.actionsArray[this.posForAdd - 1];
+      if (this.posForAdd > 1) {
+        this.posForAdd -= 1;
+        this.$emit('cancelChange', this.actionsArray[this.posForAdd - 1]);
+        console.log(`after cancel: ${this.posForAdd}`);
+      }
     },
     repeatLastChange() {
-      this.posForAdd +=1;
-      this.oneTask = this.actionsArray[this.posForAdd - 1];
+      if (this.posForAdd < this.actionsArray.length) {
+        this.posForAdd += 1;
+        this.$emit('repeatChange', this.actionsArray[this.posForAdd - 1]);
+        console.log(`after repeat: ${this.posForAdd}`);
+      }
     },
     saveChanges(taskForSave, taskId) {
       this.$apollo.mutate({
