@@ -27,7 +27,7 @@
             <v-textarea
               outlined
               no-resize
-              :value="oneTask.name"
+              :value="oneTaskFromProp.name"
               @change="changeTaskTitle($event)"
             >    
             </v-textarea>
@@ -71,7 +71,7 @@
             </v-card-actions>
           </v-col>
         </v-row>
-        <CheckBox v-for="(item, index) in oneTask.todoItems"
+        <CheckBox v-for="(item, index) in oneTaskFromProp.todoItems"
           :key="index"
           :title="item.text"
           :doneTask="item.done"
@@ -81,10 +81,7 @@
           @changeTitle="changeTextTitle(item, $event)"
         >
         </CheckBox>
-        {{ oneTask }}
-        <h3>Действия</h3> {{ actionsArray }}
-        <h3>C какой позиции добавляем</h3>{{ posForAdd }}
-        <h3>Количество удаляемых</h3>{{ deleteCountElements }}
+
      
         <v-card-actions>
           <v-row>
@@ -113,7 +110,7 @@
               <v-btn
                 color="green"
                 class="white--text mr-3"
-                @click="saveChanges(oneTask, oneTask.id)"
+                @click="saveChanges(oneTaskFromProp, oneTaskFromProp.id)"
               >
                 Сохранить
               </v-btn>
@@ -149,6 +146,7 @@ export default {
   },
   data() {
     return {
+      oneTaskFromProp: this.oneTask,
       selectedItemId: null,
       actionsArray: [],
       posForAdd: 0,
@@ -156,6 +154,10 @@ export default {
   },
   mounted() {
     this.changeActionsArray();
+    document.addEventListener('keyup', this.keyUpHandler);
+  },
+  destroyed() {
+    document.removeEventListener('keyup', this.keyUpHandler);
   },
   computed: {
     deleteCountElements() {
@@ -166,25 +168,23 @@ export default {
   },
   methods: {
     changeActionsArray() {
-      console.log('Вызвал');
-      let addNewElement = {...this.oneTask};
-      addNewElement.todoItems = [...this.oneTask.todoItems];
+      let addNewElement = {...this.oneTaskFromProp};
+      addNewElement.todoItems = [...addNewElement.todoItems];
       for (let i = 0; i < addNewElement.todoItems.length; i++) {
-        addNewElement.todoItems[i] = {...this.oneTask.todoItems[i]};
+        addNewElement.todoItems[i] = {...addNewElement.todoItems[i]};
       };
       if (this.posForAdd === this.actionsArray.length) {
         this.posForAdd += 1;
         this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
-        //console.log(addNewElement);
       }
       else {
+        console.log(addNewElement);
         this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
-        //console.log(addNewElement);
         this.posForAdd += 1;
       }
     },
     changeTaskTitle(titleTaskValue) {
-      this.oneTask.name = titleTaskValue;
+      this.oneTaskFromProp.name = titleTaskValue;
       this.changeActionsArray();
     },
     selectItem(id) {
@@ -196,8 +196,8 @@ export default {
     },
     deleteItem(id) {
       if (id !== null) {
-        const currentItem = this.oneTask.todoItems.find(item => item.id === id);
-        this.oneTask.todoItems.splice(this.oneTask.todoItems.indexOf(currentItem), 1);
+        const currentItem = this.oneTaskFromProp.todoItems.find(item => item.id === id);
+        this.oneTaskFromProp.todoItems.splice(this.oneTaskFromProp.todoItems.indexOf(currentItem), 1);
         this.selectedItemId = null;
         this.changeActionsArray();
       };
@@ -209,7 +209,7 @@ export default {
         text: 'Введите задачу',
         done: false,
       };
-      this.oneTask.todoItems.push(newItem);
+      this.oneTaskFromProp.todoItems.push(newItem);
       this.changeActionsArray();
     },
     changeTextTitle(checkBoxTask, titleText) {
@@ -219,16 +219,32 @@ export default {
     cancelLastChange() {
       if (this.posForAdd > 1) {
         this.posForAdd -= 1;
-        this.$emit('cancelChange', this.actionsArray[this.posForAdd - 1]);
-        console.log(`after cancel: ${this.posForAdd}`);
+        let currentArray = {...this.actionsArray[this.posForAdd - 1]};
+        currentArray.todoItems = [...currentArray.todoItems];
+        for(let i = 0; i < currentArray.todoItems.length; i++) {
+          currentArray.todoItems[i] = {...currentArray.todoItems[i]}
+        }
+        this.oneTaskFromProp = currentArray;
       }
     },
     repeatLastChange() {
       if (this.posForAdd < this.actionsArray.length) {
         this.posForAdd += 1;
-        this.$emit('repeatChange', this.actionsArray[this.posForAdd - 1]);
-        console.log(`after repeat: ${this.posForAdd}`);
+        let currentArray = {...this.actionsArray[this.posForAdd - 1]};
+        currentArray.todoItems = [...currentArray.todoItems];
+        for(let i = 0; i < currentArray.todoItems.length; i++) {
+          currentArray.todoItems[i] = {...currentArray.todoItems[i]}
+        }
+        this.oneTaskFromProp = currentArray;
       }
+    },
+    keyUpHandler(event) {
+      if (event.ctrlKey && event.key === 'z') {
+        this.cancelLastChange();
+      }
+      else if (event.ctrlKey && event.key === 'y') {
+        this.repeatLastChange();
+      };
     },
     saveChanges(taskForSave, taskId) {
       this.$apollo.mutate({
