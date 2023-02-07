@@ -81,7 +81,9 @@
           @changeTitle="changeTextTitle(item, $event)"
         >
         </CheckBox>
-
+        {{ oneTaskFromProp }}
+        <h4>Действия</h4>
+        {{ actionsArray }}
      
         <v-card-actions>
           <v-row>
@@ -114,11 +116,43 @@
               >
                 Сохранить
               </v-btn>
-              <v-btn
-                
+              <v-dialog
+                v-model="cancelDialog"
+                persistent
+                max-width="350"
               >
-                Отмена
-              </v-btn>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    Отмена
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Вы действительно хотите <br> отменить изменения?
+                  </v-card-title>
+                  <v-card-text>
+                    Все несохраненные данные будут потеряны.
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      text
+                      @click="cancelDialog = false"
+                    >
+                      Да
+                    </v-btn>
+                    <v-btn
+                      text
+                      @click="cancelDialog = false"
+                    >
+                      Нет
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-col>
           </v-row>
         </v-card-actions>
@@ -150,6 +184,7 @@ export default {
       selectedItemId: null,
       actionsArray: [],
       posForAdd: 0,
+      cancelDialog: false,
     }
   },
   mounted() {
