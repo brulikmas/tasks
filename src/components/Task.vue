@@ -81,10 +81,6 @@
           @changeTitle="changeTextTitle(item, $event)"
         >
         </CheckBox>
-        {{ oneTaskFromProp }}
-        <h4>Действия</h4>
-        {{ actionsArray }}
-     
         <v-card-actions>
           <v-row>
             <v-col
@@ -140,7 +136,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                       text
-                      @click="cancelDialog = false"
+                      @click="cancelChanges()"
                     >
                       Да
                     </v-btn>
@@ -185,6 +181,7 @@ export default {
       actionsArray: [],
       posForAdd: 0,
       cancelDialog: false,
+      posForSave: 1,
     }
   },
   mounted() {
@@ -199,6 +196,14 @@ export default {
       let arrayLength = this.actionsArray.length;
       let deleteCount = arrayLength - this.posForAdd;
       return deleteCount;
+    },
+    currentArray() {
+      let array = {...this.actionsArray[this.posForAdd - 1]};
+      array.todoItems = [...array.todoItems];
+      for(let i = 0; i < array.todoItems.length; i++) {
+        array.todoItems[i] = {...array.todoItems[i]}
+      };
+      return array;
     },
   },
   methods: {
@@ -254,38 +259,51 @@ export default {
     cancelLastChange() {
       if (this.posForAdd > 1) {
         this.posForAdd -= 1;
-        let currentArray = {...this.actionsArray[this.posForAdd - 1]};
-        currentArray.todoItems = [...currentArray.todoItems];
-        for(let i = 0; i < currentArray.todoItems.length; i++) {
-          currentArray.todoItems[i] = {...currentArray.todoItems[i]}
-        }
-        this.oneTaskFromProp = currentArray;
+        // let currentArray = {...this.actionsArray[this.posForAdd - 1]};
+        // currentArray.todoItems = [...currentArray.todoItems];
+        // for(let i = 0; i < currentArray.todoItems.length; i++) {
+        //   currentArray.todoItems[i] = {...currentArray.todoItems[i]}
+        // };
+        this.oneTaskFromProp = this.currentArray;
       }
     },
     repeatLastChange() {
       if (this.posForAdd < this.actionsArray.length) {
         this.posForAdd += 1;
-        let currentArray = {...this.actionsArray[this.posForAdd - 1]};
-        currentArray.todoItems = [...currentArray.todoItems];
-        for(let i = 0; i < currentArray.todoItems.length; i++) {
-          currentArray.todoItems[i] = {...currentArray.todoItems[i]}
-        }
-        this.oneTaskFromProp = currentArray;
+        // let currentArray = {...this.actionsArray[this.posForAdd - 1]};
+        // currentArray.todoItems = [...currentArray.todoItems];
+        // for(let i = 0; i < currentArray.todoItems.length; i++) {
+        //   currentArray.todoItems[i] = {...currentArray.todoItems[i]}
+        // };
+        this.oneTaskFromProp = this.currentArray;
       }
     },
     keyUpHandler(event) {
-      if (event.ctrlKey && event.key === 'z') {
+      if (event.ctrlKey && (event.key === 'z' || event.key === 'я')) {
         this.cancelLastChange();
       }
-      else if (event.ctrlKey && event.key === 'y') {
+      else if (event.ctrlKey && (event.key === 'y' || event.key === 'н')) {
         this.repeatLastChange();
       };
     },
     saveChanges(taskForSave, taskId) {
+      this.posForSave = this.posForAdd;
       this.$apollo.mutate({
         mutation: saveTaskMutation,
         variables: {taskForSave, taskId},
       });
+    },
+    cancelChanges() {
+      console.log(this.posForSave);
+      this.actionsArray.splice(this.posForSave, this.actionsArray.length);
+      this.posForAdd = this.posForSave;
+      // let currentArray = {...this.actionsArray[this.posForSave - 1]};
+      // currentArray.todoItems = [...currentArray.todoItems];
+      // for(let i = 0; i < currentArray.todoItems.length; i++) {
+      //   currentArray.todoItems[i] = {...currentArray.todoItems[i]}
+      // };
+      this.oneTaskFromProp = this.currentArray;
+      this.cancelDialog = false;
     },
   },
 }
