@@ -1,7 +1,12 @@
 <template>
   <div>
-    <v-row justify="center">
-      <v-col cols="1">
+    <v-row 
+      justify="center"  
+    >
+      <v-col 
+        cols="1"
+        class="mr-md-3 mr-2"
+      >
         <v-checkbox 
           :input-value="doneTask" 
           @change="$emit('taskDone')"
@@ -9,12 +14,16 @@
         >
         </v-checkbox>
       </v-col>
-      <v-col cols="9">
+      <v-col 
+        class="pr-4 pb-0"
+      >
         <v-text-field
           outlined 
           :value="title"
           @focus="$emit('selectItemInput')"
-          @change="$emit('changeTitle', $event)"
+          @input="$emit('changeTitle', $event)"
+          @keydown.ctrl.90.prevent
+          @keydown.ctrl.89.prevent
         >
         </v-text-field>
       </v-col>

@@ -50,10 +50,17 @@ export const resolvers = {
     //   return newItem;
     // }
     saveTask: (_, { task, id }, { cache }) => {
+      console.log("Сохраняем");
+      console.log(task);
+      console.log("Айди");
+      console.log(id);
       const data = cache.readQuery({ query: todoItemsQuery});
+      console.log(data);
       let currentItem = data.task.find(item => item.id === id);
+      console.log(currentItem);
       currentItem = task;
       cache.writeQuery({ query: todoItemsQuery, data });
+      console.log(data);
       return task;
     },
   }
