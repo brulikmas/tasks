@@ -13,22 +13,26 @@ export const todoItemsQuery = gql`
     }
   }
 `;
-export const checkItemMutation = gql`
-  mutation($id: ID!) {
-    checkItem(id: $id) @client
-  }
-`;
+// export const checkItemMutation = gql`
+//   mutation($id: ID!) {
+//     checkItem(id: $id) @client
+//   }
+// `;
 export const deleteItemMutation = gql`
-  mutation($id: ID!) {
-    deleteItem(id: $id) @client
+  mutation($idTask: ID!) {
+    deleteItem(idTask: $idTask) @client
   }
 `;
 export const addItemMutation = gql`
-  mutation($text: String!) {
-    addItem(text: $text) @client {
+  mutation($idTask: ID!) {
+    addItem(idTask: $idTask) @client {
       id
-      text
-      done
+      name
+      todoItems {
+        id
+        text
+        done
+      }
     }
   }
 `;

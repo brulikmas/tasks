@@ -98,7 +98,6 @@
                       @changeTitle="changeTextTitle(item, $event)"
                     >
                     </CheckBox>
-
                   </v-col>
                 </v-row>
                 <v-row justify="center">

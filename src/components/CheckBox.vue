@@ -2,6 +2,7 @@
   <div>
     <v-row 
       justify="center"  
+      class="mt-2"
     >
       <v-col 
         cols="1"
