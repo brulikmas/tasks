@@ -6,6 +6,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { typeDefs, resolvers } from './resolvers';
 import { persistCache } from 'apollo-cache-persist';
 import vuetify from './plugins/vuetify'
+import shortid from 'shortid';
 
 Vue.use(VueApollo);
 
@@ -36,8 +37,8 @@ if (check === null) {
           name: 'Задание 1',
           todoItems: [{
             __typename: 'Item',
-            id: '1',
-            text: 'задача 1',
+            id: shortid.generate(), //пока хранится отдельно и доступ только по id(попробовать изменить)
+            text: 'задача 1',       //при одинаковом id значения объектов todoItems меняются в разных заданиях
             done: false,
           }],
         }

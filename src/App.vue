@@ -1,8 +1,10 @@
 <template>
   <v-app>
     <v-container>
-      <v-row>
-        <v-col>
+      <v-row style="height: 100vh;">
+        <v-col
+        align-self="center"
+        >
           <v-card>
             <v-card-title>Список заданий</v-card-title>
             <v-card-actions>
@@ -16,30 +18,79 @@
                   mdi-plus-box
                 </v-icon>
               </v-btn>
-              <v-btn
-                icon
-                large
+              <v-dialog
+                persistent
+                max-width="1000px"
+                v-model="cancelEditDialog"
               >
-                <v-icon>
-                  mdi-pencil
-                </v-icon>
-              </v-btn>
-              <v-btn
-                icon
-                large
-                color="red"
-                @click="deleteItemTask(selectedItemTask)"
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    large
+                    v-bind="attrs"
+                    v-on="on"
+                    :disabled="!selectedItemTask"
+                  >
+                    <v-icon>
+                      mdi-pencil
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <Task
+                  :oneTask="task[focused]"
+                  :cancelTask="cancelEditDialog"
+                  @cancel="cancelEditDialog = false"
+                >
+                </Task>
+              </v-dialog>
+              <v-dialog
+              v-model="cancelDialog"
+              persistent
+              max-width="350"
               >
-                <v-icon>
-                  mdi-delete-outline
-                </v-icon>
-              </v-btn>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    icon
+                    large
+                    color="red"
+                    v-bind="attrs"
+                    v-on="on"
+                    :disabled="!selectedItemTask"
+                  >
+                    <v-icon>
+                      mdi-delete-outline
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="text-h5">
+                    Вы действительно хотите <br> удалить задание?
+                  </v-card-title>
+                  <v-card-text>
+                    Все данные будут безвозвратно удалены.
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      text
+                      @click="deleteItemTask(selectedItemTask)"
+                    >
+                      Да
+                    </v-btn>
+                    <v-btn
+                      text
+                      @click="cancelDialog = false"
+                    >
+                      Нет
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-card-actions>
             <v-card-text>
-
               <v-simple-table 
                 fixed-header
-                min-height="350px"
+                height="600px"
               >
                 <thead>
                   <tr>
@@ -55,24 +106,24 @@
                   <tr
                     v-for="(item, index) in task"
                     :key="index"
-                    @click="selectItemTask(item.id)"
+                    @click="selectItemTask(item.id, index)"
+                    :class="{'blue lighten-5': focused === index}"
                   >
                     <td>
                       <h3>{{ item.name }}</h3>
                     </td>
-                    <v-tooltip
-                      v-model="show"
-                      start
-                      color="purple lighten-4"
-                    >
-                      <template v-slot:activator="{ on, attrs }">
-                        <td>
-                          <CheckBox v-for="(checkItem, checkIndex) in item.todoItems.slice(0, 2)"
-                            :key="checkIndex"
-                            :title="checkItem.text"
-                            :doneTask="checkItem.done" 
-                          >
-                          </CheckBox>
+                    <td>
+                      <CheckBox v-for="(checkItem, checkIndex) in item.todoItems.slice(0, 2)"
+                        :key="checkIndex"
+                        :title="checkItem.text"
+                        :doneTask="checkItem.done" 
+                      >
+                      </CheckBox>
+                      <v-tooltip
+                        bottom
+                        color="blue lighten-4"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
                           <v-btn  
                             v-if="item.todoItems.length > 2"
                             class="px-0"
@@ -80,19 +131,18 @@
                             v-bind="attrs" 
                             v-on="on"
                             plain
-                            @click="show = !show"
                           >
                             ...
                         </v-btn>
-                        </td>
-                      </template>
-                      <CheckBox v-for="(checkItem, checkIndex) in item.todoItems"
-                          :key="checkIndex"
-                          :title="checkItem.text"
-                          :doneTask="checkItem.done"
-                        >
-                      </CheckBox>
-                    </v-tooltip>
+                        </template>
+                        <CheckBox v-for="(checkItem, checkIndex) in item.todoItems"
+                            :key="checkIndex"
+                            :title="checkItem.text"
+                            :doneTask="checkItem.done"
+                          >
+                        </CheckBox>
+                      </v-tooltip>
+                    </td>
                   </tr>
                 </tbody>
               </v-simple-table>
@@ -101,12 +151,6 @@
         </v-col>
       </v-row>
     </v-container>
-    <template></template>
-    <Task v-if="true" v-for="(item, index) in task"
-      :oneTask="item"
-    >
-      
-    </Task>
   </v-app>
 </template>
 
@@ -136,8 +180,10 @@
     },
     data() {
       return {
-        show: false,
         selectedItemTask: null,
+        focused: null,
+        cancelDialog: false,
+        cancelEditDialog: false,
       }
     },
     updated() {
@@ -145,9 +191,10 @@
       console.log('skiped')
     },
     methods: {
-      selectItemTask(id) {
+      selectItemTask(id, focusIndex) {
         console.log("Айди: " + id);
         this.selectedItemTask = id;
+        this.focused = focusIndex;
       },
       deleteItemTask(id) {
         console.log(id);
@@ -158,7 +205,9 @@
               idTask: id,
             }
           });
+          this.focused = null;
           this.selectedItemTask = null;
+          this.cancelDialog = false;
         }
         this.$apollo.queries.task.skip = false; //делаем запрос, чтобы видеть изменения после мутации
       },
@@ -177,7 +226,6 @@
 
 <style>
   td, th {
-    height: 50px !important;
     border-bottom: thin solid rgba(0, 0, 0, 0.12);
   };
 </style>

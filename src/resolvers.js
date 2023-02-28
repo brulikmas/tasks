@@ -59,7 +59,11 @@ export const resolvers = {
       console.log(data);
       let currentItem = data.task.find(item => item.id === id);
       console.log(currentItem);
-      currentItem = task;
+      currentItem = {...task};
+      currentItem.todoItems = [...currentItem.todoItems];
+      for (let i = 0; i < currentItem.todoItems.length; i++) {
+        currentItem.todoItems[i] = {...currentItem.todoItems[i]};
+      };
       cache.writeQuery({ query: todoItemsQuery, data });
       console.log(data);
       return task;
