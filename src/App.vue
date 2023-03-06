@@ -37,6 +37,8 @@
                   </v-btn>
                 </template>
                 <Task
+                  v-if="focused !== null && task.length !== 0"
+                  :key="task[focused].id"
                   :oneTask="task[focused]"
                   :cancelTask="cancelEditDialog"
                   @cancel="cancelEditDialog = false"
@@ -114,18 +116,20 @@
                     </td>
                     <td>
                       <CheckBox v-for="(checkItem, checkIndex) in item.todoItems.slice(0, 2)"
-                        :key="checkIndex"
+                        :key="checkItem.id"
                         :title="checkItem.text"
                         :doneTask="checkItem.done" 
+                        :activated="true"
+                        
                       >
                       </CheckBox>
                       <v-tooltip
+                        v-if="item.todoItems.length > 2"
                         bottom
                         color="blue lighten-4"
                       >
                         <template v-slot:activator="{ on, attrs }">
-                          <v-btn  
-                            v-if="item.todoItems.length > 2"
+                          <v-btn    
                             class="px-0"
                             style="justify-content: start;"
                             v-bind="attrs" 
@@ -163,7 +167,6 @@
     addItemMutation,
     deleteItemMutation
   } from './graphql/queries';
-  import shortid from 'shortid';
 
   export default {
     name: 'App',
@@ -186,8 +189,8 @@
         cancelEditDialog: false,
       }
     },
-    updated() {
-      this.$apollo.queries.task.skip = true; //аполло перестает делать запрос, чтобы изменяемые данные не сбрасывались в компоненте
+    beforeUpdate() {
+      //this.$apollo.queries.task.skip = true; //аполло перестает делать запрос, чтобы изменяемые данные не сбрасывались в компоненте
       console.log('skiped')
     },
     methods: {
@@ -205,20 +208,20 @@
               idTask: id,
             }
           });
-          this.focused = null;
+          this.focused = 0;
           this.selectedItemTask = null;
           this.cancelDialog = false;
         }
-        this.$apollo.queries.task.skip = false; //делаем запрос, чтобы видеть изменения после мутации
+        //this.$apollo.queries.task.skip = false; //делаем запрос, чтобы видеть изменения после мутации
       },
       addNewTask() {
         this.$apollo.mutate({
           mutation: addItemMutation,
           variables: {
-            idTask: shortid.generate(),
+            idTask: Date.now(),
           }
         });
-        this.$apollo.queries.task.skip = false; //делаем запрос, чтобы видеть изменения после мутации
+        //this.$apollo.queries.task.skip = false; //делаем запрос, чтобы видеть изменения после мутации
       },
     }
   }

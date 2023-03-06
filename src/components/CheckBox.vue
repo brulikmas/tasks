@@ -1,35 +1,37 @@
 <template>
   <div>
-    <v-row 
-      justify="center"  
-      class="mt-2"
-    >
-      <v-col 
-        cols="1"
-        class="mr-md-3 mr-2"
+    <v-form :disabled="activated">
+      <v-row 
+        justify="center"  
+        class="mt-2"
       >
-        <v-checkbox 
-          :input-value="doneTask" 
-          @change="$emit('taskDone')"
-          color="success"
+        <v-col 
+          cols="1"
+          class="mr-md-3 mr-2"
         >
-        </v-checkbox>
-      </v-col>
-      <v-col 
-        class="pr-4 pb-0"
-      >
-        <v-text-field
-          outlined 
-          :value="title"
-          @focus="$emit('selectItemInput')"
-          @input="$emit('changeTitle', $event)"
-          @keydown.ctrl.90.prevent
-          @keydown.ctrl.89.prevent
+          <v-checkbox 
+            :input-value="doneTask" 
+            @change="$emit('taskDone')"
+            color="success"
+          >
+          </v-checkbox>
+        </v-col>
+        <v-col 
+          class="pr-4 pb-0"
         >
-        </v-text-field>
-      </v-col>
-     
-    </v-row>
+          <v-text-field
+            outlined 
+            :value="title"
+            @focus="$emit('selectItemInput')"
+            @input="$emit('changeTitle', $event)"
+            @keydown.ctrl.90.prevent
+            @keydown.ctrl.89.prevent
+          >
+          </v-text-field>
+        </v-col>     
+      </v-row>
+
+    </v-form>
   </div>
 </template>
 
@@ -38,9 +40,10 @@
 export default {
   name: 'CheckBox',
   props: {
-    id: String,
+    id: Number,
     title: String,
     doneTask: Boolean,
+    activated: Boolean,
   },
   data() {
     return {

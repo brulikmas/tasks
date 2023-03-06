@@ -5,15 +5,47 @@
         Редактирование задания
         <v-spacer></v-spacer>
         <v-card-actions>
-          <v-btn
-            icon
-            large
-            @click="$emit('cancel')"
-          >
-            <v-icon>
-              mdi-close-circle-outline
-            </v-icon>
-          </v-btn>
+          <v-dialog
+                  v-model="cancelEditing"
+                  persistent
+                  max-width="450"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      icon
+                      large
+                      v-on="on"
+                      v-bind="attrs"
+                    >
+                      <v-icon>
+                        mdi-close-circle-outline
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title class="text-h5">
+                      Вы действительно хотите  закрыть окно редактирования?
+                    </v-card-title>
+                    <v-card-text>
+                      Все несохраненные данные будут потеряны.
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        text
+                        @click="cancelEdit()"
+                      >
+                        Да
+                      </v-btn>
+                      <v-btn
+                        text
+                        @click="cancelEditing = false"
+                      >
+                        Нет
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
         </v-card-actions>
       </v-card-title>
       <v-card-text> 
@@ -48,8 +80,7 @@
                 <v-subheader class="pa-0">Список задач:</v-subheader>
               </v-col>
               <v-col 
-                class="pl-0"
-                
+                class="pl-0"                
               >
                   <v-btn
                     icon
@@ -175,10 +206,8 @@
 
 import CheckBox from './CheckBox.vue';
 import { 
-    todoItemsQuery, 
     saveTaskMutation,
   } from '../graphql/queries';
-import shortid from 'shortid';
 import debounce from 'debounce';
 
 export default {
@@ -192,11 +221,12 @@ export default {
   },
   data() {
     return {
-      oneTaskFromProp: this.oneTask,
+      oneTaskFromProp: structuredClone(this.oneTask),
       selectedItemId: null,
       actionsArray: [],
       posForAdd: 0,
       cancelDialog: false,
+      cancelEditing: false,
       posForSave: 1,
     }
   },
@@ -264,7 +294,7 @@ export default {
     addItem() {
       const newItem = {
         __typename: 'Item',
-        id: shortid.generate(),
+        id: Date.now(),
         text: 'Введите задачу',
         done: false,
       };
@@ -312,6 +342,10 @@ export default {
       this.oneTaskFromProp = this.currentArray;
       this.cancelDialog = false;
     },
+    cancelEdit() {
+      this.cancelChanges();
+      this.$emit('cancel');
+    }
   },
 }
 </script>

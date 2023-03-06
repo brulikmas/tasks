@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 import { todoItemsQuery } from './graphql/queries';
-import shortid from 'shortid'
 
 export const typeDefs = gql`
   type Item {
@@ -45,7 +44,7 @@ export const resolvers = {
         name: `Задание ${data.task.length + 1}`,
         todoItems: [{
           __typename: 'Item',
-          id: '1',
+          id: Date.now(),
           text: 'Введите задачу',
           done: false,
         }],
