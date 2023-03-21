@@ -1,5 +1,4 @@
 <template>
-  <div>
     <v-card>
       <v-card-title>
         Редактирование задания
@@ -17,9 +16,7 @@
                       v-on="on"
                       v-bind="attrs"
                     >
-                      <v-icon>
-                        mdi-close-circle-outline
-                      </v-icon>
+                      <v-icon>mdi-close-circle-outline</v-icon>
                     </v-btn>
                   </template>
                   <v-card>
@@ -63,10 +60,8 @@
               <v-textarea
                 outlined
                 no-resize
-                :value="oneTaskFromProp.name"
+                :value="oneTask.name"
                 @input="changeTaskTitle($event)"
-                @keydown.ctrl.90.prevent
-                @keydown.ctrl.89.prevent
               >    
               </v-textarea>
             </v-col>
@@ -88,9 +83,7 @@
                     color="green"
                     @click="addItem()"
                   >
-                    <v-icon>
-                      mdi-plus-box
-                    </v-icon>
+                    <v-icon>mdi-plus-box</v-icon>
                   </v-btn>
                   <v-btn
                     icon
@@ -114,12 +107,12 @@
               style="max-height: 300px;"
               cols="10" 
             >
-              <CheckBox v-for="(item, index) in oneTaskFromProp.todoItems"
+              <CheckBox v-for="(item, index) in oneTask.todoItems"
                 :key="index"
                 :title="item.text"
                 :doneTask="item.done"
-                :id="item.id"
-                @selectItemInput="selectItem(item.id)"
+                :class="{'blue lighten-5': selectedItemId === item.id}"
+                @selectItemInput="selectedItemId = item.id"
                 @taskDone="checkItem(item)"
                 @changeTitle="changeTextTitle(item, $event)"
               >
@@ -153,7 +146,7 @@
                 <v-btn
                   color="green"
                   class="white--text mr-3"
-                  @click="saveChanges(oneTaskFromProp, oneTaskFromProp.id)"
+                  @click="saveChanges(oneTask, oneTask.id)"
                 >
                   Сохранить
                 </v-btn>
@@ -199,15 +192,12 @@
           </v-row>
       </v-card-text>
     </v-card>
-  </div>
 </template>
 
 <script>
 
 import CheckBox from './CheckBox.vue';
-import { 
-    saveTaskMutation,
-  } from '../graphql/queries';
+import { mapActions, mapGetters, mapMutations } from 'vuex';
 import debounce from 'debounce';
 
 export default {
@@ -215,13 +205,8 @@ export default {
   components: {
     CheckBox,
   },
-  props: {
-    oneTask: Object,
-    cancelTask: Boolean, 
-  },
   data() {
     return {
-      oneTaskFromProp: structuredClone(this.oneTask),
       selectedItemId: null,
       actionsArray: [],
       posForAdd: 0,
@@ -231,17 +216,20 @@ export default {
     }
   },
   created() {
+    this.changeActionsArray();
     this.changeTaskTitle = debounce(this.changeTaskTitle, 400);
     this.changeTextTitle = debounce(this.changeTextTitle, 400);
   },
   mounted() {
-    this.changeActionsArray();
-    document.addEventListener('keyup', this.keyUpHandler);
+    document.addEventListener('keydown', this.keyUpHandler);
   },
   destroyed() {
-    document.removeEventListener('keyup', this.keyUpHandler);
+    document.removeEventListener('keydown', this.keyUpHandler);
   },
   computed: {
+    ...mapGetters({
+      oneTask: 'oneTask/getTask',
+    }),
     deleteCountElements() {
       let arrayLength = this.actionsArray.length;
       let deleteCount = arrayLength - this.posForAdd;
@@ -257,8 +245,18 @@ export default {
     },
   },
   methods: {
+    ...mapMutations({
+      setTask: 'oneTask/SET_TASK',
+      changeName: 'oneTask/CHANGE_NAME',
+      addToDo: 'oneTask/ADD_ITEM',
+      deleteToDo: 'oneTask/DELETE_ITEM',
+    }),
+    ...mapActions({
+      saveTask: 'tasksList/saveTask',
+    }),
     changeActionsArray() {
-      let addNewElement = {...this.oneTaskFromProp};
+      console.log("change");
+      let addNewElement = {...this.oneTask};
       addNewElement.todoItems = [...addNewElement.todoItems];
       for (let i = 0; i < addNewElement.todoItems.length; i++) {
         addNewElement.todoItems[i] = {...addNewElement.todoItems[i]};
@@ -273,32 +271,23 @@ export default {
       }
     },
     changeTaskTitle(titleTaskValue) {
-      this.oneTaskFromProp.name = titleTaskValue;
+      console.log("change name");
+      this.changeName(titleTaskValue);
       this.changeActionsArray();
-    },
-    selectItem(id) {
-      this.selectedItemId = id;
-    },  
+    }, 
     checkItem(checkBoxTask) {
       checkBoxTask.done = !checkBoxTask.done;
       this.changeActionsArray();
     },
     deleteItem(id) {
       if (id !== null) {
-        const currentItem = this.oneTaskFromProp.todoItems.find(item => item.id === id);
-        this.oneTaskFromProp.todoItems.splice(this.oneTaskFromProp.todoItems.indexOf(currentItem), 1);
+        this.deleteToDo(id);
         this.selectedItemId = null;
         this.changeActionsArray();
       };
     },
     addItem() {
-      const newItem = {
-        __typename: 'Item',
-        id: Date.now(),
-        text: 'Введите задачу',
-        done: false,
-      };
-      this.oneTaskFromProp.todoItems.push(newItem);
+      this.addToDo();
       this.changeActionsArray();
     },
     changeTextTitle(checkBoxTask, titleText) {
@@ -307,39 +296,36 @@ export default {
     },
     cancelLastChange() {
       if (this.posForAdd > 1) {
+        console.log('cancel');
         this.posForAdd -= 1;
-        this.oneTaskFromProp = this.currentArray;
+        this.setTask(this.currentArray);
       }
     },
     repeatLastChange() {
       if (this.posForAdd < this.actionsArray.length) {
+        console.log('repeat');
         this.posForAdd += 1;
-        this.oneTaskFromProp = this.currentArray;
+        this.setTask(this.currentArray);
       }
     },
     keyUpHandler(event) {
       if (event.ctrlKey && (event.key === 'z' || event.key === 'я')) {
+        event.preventDefault();
         this.cancelLastChange();
       }
       else if (event.ctrlKey && (event.key === 'y' || event.key === 'н')) {
+        event.preventDefault();
         this.repeatLastChange();
       };
     },
     saveChanges(taskForSave, taskId) {
       this.posForSave = this.posForAdd;
-      this.$apollo.mutate({
-        mutation: saveTaskMutation,
-        variables: {
-          task: taskForSave, 
-          id: taskId
-        },
-      });
+      this.saveTask({ savedTask: taskForSave, savedId: taskId});
     },
     cancelChanges() {
-      console.log(this.posForSave);
       this.actionsArray.splice(this.posForSave, this.actionsArray.length);
       this.posForAdd = this.posForSave;
-      this.oneTaskFromProp = this.currentArray;
+      this.setTask(this.currentArray);
       this.cancelDialog = false;
     },
     cancelEdit() {

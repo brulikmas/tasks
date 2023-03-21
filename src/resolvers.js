@@ -12,60 +12,49 @@ export const typeDefs = gql`
     name: String!
     item: Item
   }
-
+  type Query {
+    todoTasks: [Task]
+  }
   type Mutation {
-    checkItem(id: ID!): Boolean
-    deleteItem(idTask: ID!): Boolean
-    addItem(idTask: ID!): Task
-    saveTask(task: Task!, id: ID!): Task
+    deleteTask(idTask: ID!): [Task]
+    addTask(idTask: ID!): [Task]
+    saveTask(todoTasks: Task!, id: ID!): [Task]
   }
 `;
 export const resolvers = {
+
+
   Mutation: {
-    // checkItem: (_, { id }, { cache }) => {
-    //   const data = cache.readQuery({ query: todoItemsQuery});
-    //   const currentItem = data.task.todoItems.find(item => item.id === id);
-    //   currentItem.done = !currentItem.done;
-    //   //cache.writeQuery({ query: todoItemsQuery, data});
-    //   return currentItem.done;
-    // },
-    deleteItem: (_, { idTask }, { cache }) => {
+    deleteTask: (_, { idTask }, { cache }) => {
       const data = cache.readQuery({ query: todoItemsQuery });
-      const currentItem = data.task.find(item => item.id === idTask);
-      data.task.splice(data.task.indexOf(currentItem), 1);
-      cache.writeQuery({ query: todoItemsQuery, data });
-      return true
+      const currentItem = data.todoTasks.find(item => item.id === idTask);
+      data.todoTasks.splice(data.todoTasks.indexOf(currentItem), 1);
+      cache.writeData({ data });
+      return data.todoTasks;
     },
-    addItem: (_, { idTask }, { cache }) => {
+    addTask: (_, { idTask }, { cache }) => {
       const data = cache.readQuery({ query: todoItemsQuery });
-      const newItem = {
+      const newTask = {
         __typename: 'Task',
         id: idTask,
-        name: `Задание ${data.task.length + 1}`,
+        name: `Введите задание`,
         todoItems: [{
           __typename: 'Item',
           id: Date.now(),
-          text: 'Введите задачу',
+          text: '',
           done: false,
         }],
       };
-      data.task.push(newItem);
-      cache.writeQuery({ query: todoItemsQuery, data });
-      return newItem;
+      data.todoTasks.push(newTask);
+      cache.writeData({ data });
+      return data.todoTasks;
     },
     saveTask: (_, { task, id }, { cache }) => {
       const data = cache.readQuery({ query: todoItemsQuery});
-      console.log(data);
-      let currentItem = data.task.find(item => item.id === id);
-      console.log(currentItem);
-      currentItem = {...task};
-      currentItem.todoItems = [...currentItem.todoItems];
-      for (let i = 0; i < currentItem.todoItems.length; i++) {
-        currentItem.todoItems[i] = {...currentItem.todoItems[i]};
-      };
-      cache.writeQuery({ query: todoItemsQuery, data });
-      console.log(data);
-      return task;
+      const currentItem = data.todoTasks.find(item => item.id === id);
+      data.todoTasks.splice(data.todoTasks.indexOf(currentItem), 1, task);
+      cache.writeData({ data });
+      return data.todoTasks;
     },
   }
 }

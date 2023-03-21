@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="radius pt-2 pl-2" @click="$emit('selectItemInput')">
     <v-form :disabled="activated">
       <v-row 
         justify="center"  
@@ -22,10 +22,8 @@
           <v-text-field
             outlined 
             :value="title"
-            @focus="$emit('selectItemInput')"
             @input="$emit('changeTitle', $event)"
-            @keydown.ctrl.90.prevent
-            @keydown.ctrl.89.prevent
+            placeholder="Введите задачу"
           >
           </v-text-field>
         </v-col>     
@@ -40,7 +38,6 @@
 export default {
   name: 'CheckBox',
   props: {
-    id: Number,
     title: String,
     doneTask: Boolean,
     activated: Boolean,
@@ -58,5 +55,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .radius {
+    border-radius: 10px;
+  }
 </style>
