@@ -15,7 +15,7 @@
     </thead>
     <tbody>
       <tr
-        v-for="(item, index) in task"
+        v-for="(item, index) in tasks"
         :key="index"
         @click="selectTask(item.id)"
         :class="{'blue lighten-5': selectedItemTask === item.id}"
@@ -76,7 +76,7 @@
     },
     computed: {
       ...mapGetters({
-        task: 'tasksList/getTasks',
+        tasks: 'tasksList/getTasks',
         selectedItemTask: 'tasksList/getSelectedTask',
         oneTask: 'tasksList/getOneTask',
       })
@@ -87,8 +87,10 @@
         setOneTask: 'oneTask/SET_ONETASK',
       }),
       selectTask(id) {
-        this.selectItemTask(id);
-        this.setOneTask(this.oneTask);
+        if(id !== this.selectedItemTask) {
+          this.selectItemTask(id);
+          this.setOneTask(this.oneTask);
+        }
       },
     },
   }

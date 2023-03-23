@@ -28,12 +28,13 @@
                     v-bind="attrs"
                     v-on="on"
                     :disabled="!selectedItemTask"
+                    @click="++updateKey"
                   >
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
                 <Task
-                  :key="cancelEditDialog"
+                  :key="updateKey"
                   @cancel="cancelEditDialog = false"
                 >
                 </Task>
@@ -93,7 +94,7 @@
 <script>
   import Task from './components/Task.vue';
   import TaskList from './components/TaskList.vue';
-  import { mapActions, mapGetters, mapMutations } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
 
   export default {
     name: 'App',
@@ -105,11 +106,12 @@
       return {
         cancelDialog: false,
         cancelEditDialog: false,
+        updateKey: 0, //для перерендеринга компонента Task
       }
     },
     computed: {
       ...mapGetters({
-        task: 'tasksList/getTasks',
+        tasks: 'tasksList/getTasks',
         selectedItemTask: 'tasksList/getSelectedTask',
       })
     },
@@ -122,13 +124,9 @@
         addTask: 'tasksList/addNewTask',
         deleteTask: 'tasksList/deleteTaskFrom'
       }),
-      ...mapMutations({
-        selectItemTask: 'tasksList/SELECT_TASK',
-      }),
       deleteTaskMethod(id) {
         if (id !== null) {
           this.deleteTask(id);
-          this.selectItemTask(null);
           this.cancelDialog = false;
         }
       },

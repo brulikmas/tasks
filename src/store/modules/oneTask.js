@@ -32,6 +32,16 @@ export default {
       const currentItem = arrayToDo.find(item => item.id === payload);
       arrayToDo.splice(arrayToDo.indexOf(currentItem), 1); 
     },
+    CHECK_ITEM(state, payload) {
+      const arrayToDo = state.oneTask.todoItems;
+      const currentItem = arrayToDo.find(item => item.id === payload);
+      currentItem.done = !currentItem.done;
+    },
+    CHANGE_TEXT_TODO(state, payload) {
+      const arrayToDo = state.oneTask.todoItems;
+      const currentItem = arrayToDo.find(item => item.id === payload.id);
+      currentItem.text = payload.text;
+    }
   },
   actions: {
     

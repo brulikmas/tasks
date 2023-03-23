@@ -33,6 +33,7 @@ export default {
     },
     DELETE_TASK(state, payload) {
       state.tasks = payload;
+      state.selectedTask = null;
     },
     SELECT_TASK(state, payload) {
       state.selectedTask = payload;
@@ -65,7 +66,7 @@ export default {
         console.log(e);
       }
     },
-    async deleteTaskFrom( {commit }, payloadId) {
+    async deleteTaskFrom( { commit }, payloadId) {
       try {
         const response = await apollo.mutate({
           mutation: deleteItemMutation,

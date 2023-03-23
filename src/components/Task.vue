@@ -113,8 +113,8 @@
                 :doneTask="item.done"
                 :class="{'blue lighten-5': selectedItemId === item.id}"
                 @selectItemInput="selectedItemId = item.id"
-                @taskDone="checkItem(item)"
-                @changeTitle="changeTextTitle(item, $event)"
+                @taskDone="checkItem(item.id)"
+                @changeTitle="changeItemText(item.id, $event)"
               >
               </CheckBox>
             </v-col>
@@ -208,7 +208,7 @@ export default {
   data() {
     return {
       selectedItemId: null,
-      actionsArray: [],
+      actionsArray: [], //необходим для истории действий
       posForAdd: 0,
       cancelDialog: false,
       cancelEditing: false,
@@ -217,31 +217,36 @@ export default {
   },
   created() {
     this.changeActionsArray();
-    this.changeTaskTitle = debounce(this.changeTaskTitle, 400);
-    this.changeTextTitle = debounce(this.changeTextTitle, 400);
+    //Задержка, чтобы функция срабатывала не сразу, при вводе текста
+    this.changeTaskTitle = debounce(this.changeTaskTitle, 400); 
+    this.changeItemText = debounce(this.changeItemText, 400);
   },
   mounted() {
-    document.addEventListener('keydown', this.keyUpHandler);
+    //слушаем событие нажатия клавиши и запускаем функцию, необходимо для
+    //отмены и повтора выполненых действий клавишами ctrl+z и ctrl+y
+    document.addEventListener('keydown', this.keyUpHandler);  
   },
   destroyed() {
-    document.removeEventListener('keydown', this.keyUpHandler);
+    //удаляем слушатель события
+    document.removeEventListener('keydown', this.keyUpHandler); 
   },
   computed: {
     ...mapGetters({
       oneTask: 'oneTask/getTask',
     }),
+    //свойство для подсчета количества удаляемых элементов в массиве действий
     deleteCountElements() {
       let arrayLength = this.actionsArray.length;
       let deleteCount = arrayLength - this.posForAdd;
       return deleteCount;
     },
-    currentArray() {
-      let array = {...this.actionsArray[this.posForAdd - 1]};
-      array.todoItems = [...array.todoItems];
-      for(let i = 0; i < array.todoItems.length; i++) {
-        array.todoItems[i] = {...array.todoItems[i]}
+    currentTask() {
+      let taskObject = {...this.actionsArray[this.posForAdd - 1]}; //
+      taskObject.todoItems = [...taskObject.todoItems];
+      for(let i = 0; i < taskObject.todoItems.length; i++) {
+        taskObject.todoItems[i] = {...taskObject.todoItems[i]}
       };
-      return array;
+      return taskObject;
     },
   },
   methods: {
@@ -250,12 +255,20 @@ export default {
       changeName: 'oneTask/CHANGE_NAME',
       addToDo: 'oneTask/ADD_ITEM',
       deleteToDo: 'oneTask/DELETE_ITEM',
+      checkToDo: 'oneTask/CHECK_ITEM',
+      changeTextToDo: 'oneTask/CHANGE_TEXT_TODO'
     }),
     ...mapActions({
       saveTask: 'tasksList/saveTask',
     }),
+    /*
+      Добавляет метку(элемент) действия, к которой можно будет вернуться.
+      Клонируем с помощью оператора spread, чтобы каждый элемент в массиве 
+      действий был уникальным. Пытался сделать через watch, следя за геттером
+      oneTask, но на вызов функций повтор/отмена так же срабатывал watch, 
+      записывая метку повтора/отмены в массив.
+    */ 
     changeActionsArray() {
-      console.log("change");
       let addNewElement = {...this.oneTask};
       addNewElement.todoItems = [...addNewElement.todoItems];
       for (let i = 0; i < addNewElement.todoItems.length; i++) {
@@ -271,12 +284,11 @@ export default {
       }
     },
     changeTaskTitle(titleTaskValue) {
-      console.log("change name");
       this.changeName(titleTaskValue);
       this.changeActionsArray();
     }, 
-    checkItem(checkBoxTask) {
-      checkBoxTask.done = !checkBoxTask.done;
+    checkItem(id) {
+      this.checkToDo(id);
       this.changeActionsArray();
     },
     deleteItem(id) {
@@ -290,24 +302,24 @@ export default {
       this.addToDo();
       this.changeActionsArray();
     },
-    changeTextTitle(checkBoxTask, titleText) {
-      checkBoxTask.text = titleText;
+    changeItemText(id, titleText) {
+      this.changeTextToDo({id: id, text: titleText});
       this.changeActionsArray();
     },
     cancelLastChange() {
       if (this.posForAdd > 1) {
-        console.log('cancel');
         this.posForAdd -= 1;
-        this.setTask(this.currentArray);
+        this.setTask(this.currentTask);
       }
     },
     repeatLastChange() {
       if (this.posForAdd < this.actionsArray.length) {
-        console.log('repeat');
         this.posForAdd += 1;
-        this.setTask(this.currentArray);
+        this.setTask(this.currentTask);
       }
     },
+    //проверяем нажатие пользователем комбинации клавиш ctrl+z и ctrl+y
+    //и предотвращаем стандартное поведение инпутов на эти комбинации,
     keyUpHandler(event) {
       if (event.ctrlKey && (event.key === 'z' || event.key === 'я')) {
         event.preventDefault();
@@ -319,13 +331,15 @@ export default {
       };
     },
     saveChanges(taskForSave, taskId) {
+      //меняем позицию сохрания, чтобы при нажатии кнопки "отмена",
+      //был сброс данных до этой позиции
       this.posForSave = this.posForAdd;
       this.saveTask({ savedTask: taskForSave, savedId: taskId});
     },
     cancelChanges() {
       this.actionsArray.splice(this.posForSave, this.actionsArray.length);
       this.posForAdd = this.posForSave;
-      this.setTask(this.currentArray);
+      this.setTask(this.currentTask);
       this.cancelDialog = false;
     },
     cancelEdit() {
