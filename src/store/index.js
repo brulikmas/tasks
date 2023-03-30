@@ -10,7 +10,4 @@ export default new Vuex.Store({
     tasksList, 
     oneTask,
   },
-  getters: {
-
-  }
 })

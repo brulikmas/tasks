@@ -18,7 +18,7 @@
         v-for="(item, index) in tasks"
         :key="index"
         @click="selectTask(item.id)"
-        :class="{'blue lighten-5': selectedItemTask === item.id}"
+        :class="{'blue lighten-5': selectedTaskId === item.id}"
       >
         <td>
           <h3>{{ item.name }}</h3>
@@ -27,7 +27,7 @@
           <CheckBox v-for="(checkItem, checkIndex) in item.todoItems.slice(0, 2)"
             :key="checkItem.id"
             :title="checkItem.text"
-            :doneTask="checkItem.done" 
+            :doneToDo="checkItem.done" 
             :activated="true"
           >
           </CheckBox>
@@ -50,7 +50,7 @@
             <CheckBox v-for="(checkItem, checkIndex) in item.todoItems"
                 :key="checkIndex"
                 :title="checkItem.text"
-                :doneTask="checkItem.done"
+                :doneToDo="checkItem.done"
               >
             </CheckBox>
           </v-tooltip>
@@ -77,18 +77,18 @@
     computed: {
       ...mapGetters({
         tasks: 'tasksList/getTasks',
-        selectedItemTask: 'tasksList/getSelectedTask',
+        selectedTaskId: 'tasksList/getSelectedTaskId',
         oneTask: 'tasksList/getOneTask',
       })
     },
     methods: {
       ...mapMutations({
-        selectItemTask: 'tasksList/SELECT_TASK',
-        setOneTask: 'oneTask/SET_ONETASK',
+        changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
+        setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
       }),
       selectTask(id) {
-        if(id !== this.selectedItemTask) {
-          this.selectItemTask(id);
+        if(id !== this.selectedTaskId) {
+          this.changeSelectedTaskId(id);
           this.setOneTask(this.oneTask);
         }
       },

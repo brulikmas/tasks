@@ -9,16 +9,16 @@ export default {
     }
   },
   mutations: {
-    SET_ONETASK(state, payload) {
-      state.oneTask = structuredClone(payload);
+    SET_ONETASK_FROM_TASKLIST(state, oneTaskFromTaskList) {
+      state.oneTask = structuredClone(oneTaskFromTaskList);
     },
-    SET_TASK(state, payload) {
-      state.oneTask = payload;
+    CHANGE_TASK(state, task) {
+      state.oneTask = task;
     },
-    CHANGE_NAME(state, payload) {
-      state.oneTask.name = payload;
+    CHANGE_TASK_NAME(state, nameTask) {
+      state.oneTask.name = nameTask;
     },
-    ADD_ITEM(state) {
+    ADD_TODO(state) {
       const newItem = {
         __typename: 'Item',
         id: Date.now(),
@@ -27,14 +27,14 @@ export default {
       };
       state.oneTask.todoItems.push(newItem);
     },
-    DELETE_ITEM(state, payload) {
+    DELETE_TODO(state, idToDoItem) {
       const arrayToDo = state.oneTask.todoItems;
-      const currentItem = arrayToDo.find(item => item.id === payload);
+      const currentItem = arrayToDo.find(item => item.id === idToDoItem);
       arrayToDo.splice(arrayToDo.indexOf(currentItem), 1); 
     },
-    CHECK_ITEM(state, payload) {
+    CHANGE_DONE_TODO(state, idToDoItem) {
       const arrayToDo = state.oneTask.todoItems;
-      const currentItem = arrayToDo.find(item => item.id === payload);
+      const currentItem = arrayToDo.find(item => item.id === idToDoItem);
       currentItem.done = !currentItem.done;
     },
     CHANGE_TEXT_TODO(state, payload) {
@@ -42,8 +42,5 @@ export default {
       const currentItem = arrayToDo.find(item => item.id === payload.id);
       currentItem.text = payload.text;
     }
-  },
-  actions: {
-    
   },
 }

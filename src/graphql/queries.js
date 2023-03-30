@@ -17,6 +17,7 @@ export const todoItemsQuery = gql`
 export const deleteItemMutation = gql`
   mutation deleteTask($idTask: ID!) {
     deleteTask(idTask: $idTask) @client {
+      id
       name
       todoItems {
         id
@@ -40,8 +41,8 @@ export const addItemMutation = gql`
   }
 `;
 export const saveTaskMutation = gql`
-  mutation($task: Task!, $id: ID!) {
-    saveTask(task: $task, id: $id) @client {
+  mutation($task: Task!, $idTask: ID!) {
+    saveTask(task: $task, idTask: $idTask) @client {
       id
       name
       todoItems {

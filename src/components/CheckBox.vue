@@ -10,7 +10,7 @@
           class="mr-md-3 mr-2"
         >
           <v-checkbox 
-            :input-value="doneTask" 
+            :input-value="doneToDo" 
             @change="$emit('taskDone')"
             color="success"
           >
@@ -39,7 +39,7 @@ export default {
   name: 'CheckBox',
   props: {
     title: String,
-    doneTask: Boolean,
+    doneToDo: Boolean,
     activated: Boolean,
   },
   data() {

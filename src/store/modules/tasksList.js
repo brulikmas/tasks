@@ -10,33 +10,34 @@ export default {
   namespaced: true,
   state: {
     tasks: [],
-    selectedTask: null,
+    selectedTaskId: null,
   },
   getters: {
     getTasks(state) {
       return state.tasks;
     },
-    getSelectedTask(state) {
-      return state.selectedTask;
+    getSelectedTaskId(state) {
+      return state.selectedTaskId;
     },
     getOneTask(state) {
-      const finded = state.tasks.find(item => item.id === state.selectedTask);
+      const finded = state.tasks.find(item => item.id === state.selectedTaskId);
       return finded; 
     }
   },
   mutations: {
+    //в payload во всех мутациях всегда получаем массив заданий
     SET_TASKS(state, payload) {
-      state.tasks = payload;  //в payload во всех мутациях всегда получаем массив заданий
+      state.tasks = payload;
     },
     ADD_TASK(state, payload) { 
       state.tasks = payload;
     },
     DELETE_TASK(state, payload) {
       state.tasks = payload;
-      state.selectedTask = null;
+      state.selectedTaskId = null;
     },
-    SELECT_TASK(state, payload) {
-      state.selectedTask = payload;
+    CHANGE_SELECTED_TASK_ID(state, id) {
+      state.selectedTaskId = id;
     },
     SAVE_TASK(state, payload) {
       state.tasks = payload;
@@ -66,7 +67,7 @@ export default {
         console.log(e);
       }
     },
-    async deleteTaskFrom( { commit }, payloadId) {
+    async deleteTask( { commit }, payloadId) {
       try {
         const response = await apollo.mutate({
           mutation: deleteItemMutation,
@@ -85,7 +86,7 @@ export default {
           mutation: saveTaskMutation,
           variables: {
             task: payload.savedTask,
-            id: payload.savedId,
+            idTask: payload.savedId,
           },
         });
         commit('SAVE_TASK', response.data.saveTask);

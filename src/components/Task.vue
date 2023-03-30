@@ -81,7 +81,7 @@
                     icon
                     large
                     color="green"
-                    @click="addItem()"
+                    @click="addToDoItem()"
                   >
                     <v-icon>mdi-plus-box</v-icon>
                   </v-btn>
@@ -89,7 +89,7 @@
                     icon
                     large
                     color="red"
-                    @click="deleteItem(selectedItemId)"
+                    @click="deleteToDoItem(selectedToDoId)"
                   >
                     <v-icon>
                       mdi-delete-outline
@@ -110,11 +110,11 @@
               <CheckBox v-for="(item, index) in oneTask.todoItems"
                 :key="index"
                 :title="item.text"
-                :doneTask="item.done"
-                :class="{'blue lighten-5': selectedItemId === item.id}"
-                @selectItemInput="selectedItemId = item.id"
-                @taskDone="checkItem(item.id)"
-                @changeTitle="changeItemText(item.id, $event)"
+                :doneToDo="item.done"
+                :class="{'blue lighten-5': selectedToDoId === item.id}"
+                @selectItemInput="selectedToDoId = item.id"
+                @taskDone="changeToDoItemDone(item.id)"
+                @changeTitle="changeToDoItemText(item.id, $event)"
               >
               </CheckBox>
             </v-col>
@@ -207,7 +207,7 @@ export default {
   },
   data() {
     return {
-      selectedItemId: null,
+      selectedToDoId: null,
       actionsArray: [], //необходим для истории действий
       posForAdd: 0,
       cancelDialog: false,
@@ -219,7 +219,7 @@ export default {
     this.changeActionsArray();
     //Задержка, чтобы функция срабатывала не сразу, при вводе текста
     this.changeTaskTitle = debounce(this.changeTaskTitle, 400); 
-    this.changeItemText = debounce(this.changeItemText, 400);
+    this.changeToDoItemText = debounce(this.changeToDoItemText, 400);
   },
   mounted() {
     //слушаем событие нажатия клавиши и запускаем функцию, необходимо для
@@ -251,11 +251,11 @@ export default {
   },
   methods: {
     ...mapMutations({
-      setTask: 'oneTask/SET_TASK',
-      changeName: 'oneTask/CHANGE_NAME',
-      addToDo: 'oneTask/ADD_ITEM',
-      deleteToDo: 'oneTask/DELETE_ITEM',
-      checkToDo: 'oneTask/CHECK_ITEM',
+      changeTask: 'oneTask/CHANGE_TASK',
+      changeTaskName: 'oneTask/CHANGE_TASK_NAME',
+      addToDo: 'oneTask/ADD_TODO',
+      deleteToDo: 'oneTask/DELETE_TODO',
+      changeDoneToDo: 'oneTask/CHANGE_DONE_TODO',
       changeTextToDo: 'oneTask/CHANGE_TEXT_TODO'
     }),
     ...mapActions({
@@ -284,38 +284,38 @@ export default {
       }
     },
     changeTaskTitle(titleTaskValue) {
-      this.changeName(titleTaskValue);
+      this.changeTaskName(titleTaskValue);
       this.changeActionsArray();
     }, 
-    checkItem(id) {
-      this.checkToDo(id);
+    changeToDoItemDone(id) {
+      this.changeDoneToDo(id);
       this.changeActionsArray();
     },
-    deleteItem(id) {
+    deleteToDoItem(id) {
       if (id !== null) {
         this.deleteToDo(id);
-        this.selectedItemId = null;
+        this.selectedToDoId = null;
         this.changeActionsArray();
       };
     },
-    addItem() {
+    addToDoItem() {
       this.addToDo();
       this.changeActionsArray();
     },
-    changeItemText(id, titleText) {
+    changeToDoItemText(id, titleText) {
       this.changeTextToDo({id: id, text: titleText});
       this.changeActionsArray();
     },
     cancelLastChange() {
       if (this.posForAdd > 1) {
         this.posForAdd -= 1;
-        this.setTask(this.currentTask);
+        this.changeTask(this.currentTask);
       }
     },
     repeatLastChange() {
       if (this.posForAdd < this.actionsArray.length) {
         this.posForAdd += 1;
-        this.setTask(this.currentTask);
+        this.changeTask(this.currentTask);
       }
     },
     //проверяем нажатие пользователем комбинации клавиш ctrl+z и ctrl+y
@@ -339,7 +339,7 @@ export default {
     cancelChanges() {
       this.actionsArray.splice(this.posForSave, this.actionsArray.length);
       this.posForAdd = this.posForSave;
-      this.setTask(this.currentTask);
+      this.changeTask(this.currentTask);
       this.cancelDialog = false;
     },
     cancelEdit() {

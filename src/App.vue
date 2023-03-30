@@ -27,7 +27,7 @@
                     large
                     v-bind="attrs"
                     v-on="on"
-                    :disabled="!selectedItemTask"
+                    :disabled="!selectedItemTaskId"
                     @click="++updateKey"
                   >
                     <v-icon>mdi-pencil</v-icon>
@@ -51,7 +51,7 @@
                     color="red"
                     v-bind="attrs"
                     v-on="on"
-                    :disabled="!selectedItemTask"
+                    :disabled="!selectedItemTaskId"
                   >
                     <v-icon>mdi-delete-outline</v-icon>
                   </v-btn>
@@ -67,7 +67,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                       text
-                      @click="deleteTaskMethod(selectedItemTask)"
+                      @click="deleteTaskMethod(selectedItemTaskId)"
                     >
                       Да
                     </v-btn>
@@ -112,17 +112,17 @@
     computed: {
       ...mapGetters({
         tasks: 'tasksList/getTasks',
-        selectedItemTask: 'tasksList/getSelectedTask',
+        selectedItemTaskId: 'tasksList/getSelectedTaskId',
       })
     },
     created() {
-      this.load();
+      this.loadTasks();
     },
     methods: {
       ...mapActions({
-        load: 'tasksList/loadTasks',
+        loadTasks: 'tasksList/loadTasks',
         addTask: 'tasksList/addNewTask',
-        deleteTask: 'tasksList/deleteTaskFrom'
+        deleteTask: 'tasksList/deleteTask'
       }),
       deleteTaskMethod(id) {
         if (id !== null) {
