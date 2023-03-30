@@ -11,10 +11,18 @@ export default {
   state: {
     tasks: [],
     selectedTaskId: null,
+    flagEditDialog: false,
+    updateKey: 0, //для перерендеринга компонента Task
   },
   getters: {
     getTasks(state) {
       return state.tasks;
+    },
+    getFlagEditDialog(state) {
+      return state.flagEditDialog;
+    },
+    getUpdateKey(state) {
+      return state.updateKey;
     },
     getSelectedTaskId(state) {
       return state.selectedTaskId;
@@ -26,7 +34,7 @@ export default {
   },
   mutations: {
     //в payload во всех мутациях всегда получаем массив заданий
-    SET_TASKS(state, payload) {
+    LOAD_TASKS(state, payload) {
       state.tasks = payload;
     },
     ADD_TASK(state, payload) { 
@@ -42,6 +50,12 @@ export default {
     SAVE_TASK(state, payload) {
       state.tasks = payload;
     },
+    CHANGE_FLAG_EDIT(state) {
+      state.flagEditDialog = !state.flagEditDialog;
+    },
+    CHANGE_UPDATE_KEY(state) {
+      state.updateKey++;
+    },
   },
   actions: {
     async loadTasks({ commit }) {
@@ -49,20 +63,24 @@ export default {
         const response = await apollo.query({
           query: todoItemsQuery,
         });
-        commit('SET_TASKS', response.data.todoTasks); 
+        commit('LOAD_TASKS', response.data.todoTasks);
       } catch(e) {
         console.log(e);
       }
     },
-    async addNewTask({ commit }) {
+    async addNewTask({ commit, getters }, payloadId) {
       try {
         const response = await apollo.mutate({
           mutation: addItemMutation,
           variables: {
-            idTask: Date.now(),
+            idTask: payloadId,
           }
         });
         commit('ADD_TASK', response.data.addTask);
+        commit('CHANGE_SELECTED_TASK_ID', payloadId);
+        commit('oneTask/SET_ONETASK_FROM_TASKLIST', getters.getOneTask, { root: true });
+        commit('CHANGE_FLAG_EDIT');
+        commit('CHANGE_UPDATE_KEY');
       } catch(e) {
         console.log(e);
       }

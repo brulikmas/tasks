@@ -8,36 +8,30 @@
           <v-card>
             <v-card-title>Список заданий</v-card-title>
             <v-card-actions>
-              <v-btn
-                icon
-                large
-                color="green"
-                @click="addTask()"
-              >
-                <v-icon>mdi-plus-box</v-icon>
-              </v-btn>
               <v-dialog
                 persistent
                 max-width="1000px"
-                v-model="cancelEditDialog"
+                v-model="flagDialog"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                     icon
                     large
-                    v-bind="attrs"
-                    v-on="on"
+                    color="green"
+                    @click="addTaskMethod()"
+                  >
+                    <v-icon>mdi-plus-box</v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    large
                     :disabled="!selectedItemTaskId"
-                    @click="++updateKey"
+                    @click="openEdit()"
                   >
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
-                <Task
-                  :key="updateKey"
-                  @cancel="cancelEditDialog = false"
-                >
-                </Task>
+                <Task :key="updateKey"></Task>
               </v-dialog>
               <v-dialog
                 v-model="cancelDialog"
@@ -94,7 +88,7 @@
 <script>
   import Task from './components/Task.vue';
   import TaskList from './components/TaskList.vue';
-  import { mapActions, mapGetters } from 'vuex';
+  import { mapActions, mapGetters, mapMutations } from 'vuex';
 
   export default {
     name: 'App',
@@ -104,16 +98,18 @@
     },
     data() {
       return {
-        cancelDialog: false,
-        cancelEditDialog: false,
-        updateKey: 0, //для перерендеринга компонента Task
+        cancelDialog: false, 
       }
     },
     computed: {
       ...mapGetters({
         tasks: 'tasksList/getTasks',
         selectedItemTaskId: 'tasksList/getSelectedTaskId',
-      })
+        oneTask: 'tasksList/getOneTask',
+        flagDialog: 'tasksList/getFlagEditDialog',
+        updateKey: 'tasksList/getUpdateKey',
+      }),
+
     },
     created() {
       this.loadTasks();
@@ -124,11 +120,25 @@
         addTask: 'tasksList/addNewTask',
         deleteTask: 'tasksList/deleteTask'
       }),
+      ...mapMutations({
+        changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
+        setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
+        changeFlagEdit: 'tasksList/CHANGE_FLAG_EDIT',
+        changeUpdateKey: 'tasksList/CHANGE_UPDATE_KEY',
+      }),
       deleteTaskMethod(id) {
         if (id !== null) {
           this.deleteTask(id);
           this.cancelDialog = false;
         }
+      },
+      addTaskMethod() {
+        let idNewTask = Date.now();
+        this.addTask(idNewTask);
+      },
+      openEdit() {
+        this.changeFlagEdit();
+        this.changeUpdateKey(); 
       },
     }
   }

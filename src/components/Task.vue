@@ -241,7 +241,7 @@ export default {
       return deleteCount;
     },
     currentTask() {
-      let taskObject = {...this.actionsArray[this.posForAdd - 1]}; //
+      let taskObject = {...this.actionsArray[this.posForAdd - 1]}; 
       taskObject.todoItems = [...taskObject.todoItems];
       for(let i = 0; i < taskObject.todoItems.length; i++) {
         taskObject.todoItems[i] = {...taskObject.todoItems[i]}
@@ -256,7 +256,8 @@ export default {
       addToDo: 'oneTask/ADD_TODO',
       deleteToDo: 'oneTask/DELETE_TODO',
       changeDoneToDo: 'oneTask/CHANGE_DONE_TODO',
-      changeTextToDo: 'oneTask/CHANGE_TEXT_TODO'
+      changeTextToDo: 'oneTask/CHANGE_TEXT_TODO',
+      changeFlagEdit: 'tasksList/CHANGE_FLAG_EDIT',
     }),
     ...mapActions({
       saveTask: 'tasksList/saveTask',
@@ -344,7 +345,7 @@ export default {
     },
     cancelEdit() {
       this.cancelChanges();
-      this.$emit('cancel');
+      this.changeFlagEdit();
     }
   },
 }
