@@ -2,7 +2,10 @@
 
 ## Project setup
 ```
+git clone http://git.nic.etu/kmaslennikov/26-Js-vue-graphql-kmaslennikov.git "your_dir_name"
+cd ./your_dir_name
 npm install
+npm run serve
 ```
 
 ### Compiles and hot-reloads for development

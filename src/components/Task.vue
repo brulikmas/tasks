@@ -30,7 +30,7 @@
                       <v-spacer></v-spacer>
                       <v-btn
                         text
-                        @click="cancelEdit()"
+                        @click="cancelChanges()"
                       >
                         Да
                       </v-btn>
@@ -342,11 +342,8 @@ export default {
       this.posForAdd = this.posForSave;
       this.changeTask(this.currentTask);
       this.cancelDialog = false;
-    },
-    cancelEdit() {
-      this.cancelChanges();
       this.changeFlagEdit();
-    }
+    },
   },
 }
 </script>
