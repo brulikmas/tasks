@@ -34,7 +34,7 @@
                 <Task :key="updateKey"></Task>
               </v-dialog>
               <v-dialog
-                v-model="cancelDialog"
+                v-model="isCancelDialogShown"
                 persistent
                 max-width="350"
               >
@@ -67,7 +67,7 @@
                     </v-btn>
                     <v-btn
                       text
-                      @click="cancelDialog = false"
+                      @click="isCancelDialogShown = false"
                     >
                       Нет
                     </v-btn>
@@ -98,7 +98,7 @@
     },
     data() {
       return {
-        cancelDialog: false, 
+        isCancelDialogShown: false, 
       }
     },
     computed: {
@@ -129,7 +129,7 @@
       deleteTaskMethod() {
         if (this.selectedItemTaskId !== null) {
           this.deleteTask(this.selectedItemTaskId);
-          this.cancelDialog = false;
+          this.isCancelDialogShown = false;
         }
       },
       addTaskMethod() {
