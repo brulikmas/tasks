@@ -104,6 +104,7 @@
       return {
         isCancelDialogShown: false,
         isEditTaskDialogShown: false,
+        updateKey: 0,
       }
     },
     computed: {
@@ -111,7 +112,6 @@
         tasks: 'tasksList/getTasks',
         selectedItemTaskId: 'tasksList/getSelectedTaskId',
         oneTask: 'tasksList/getOneTask',
-        updateKey: 'tasksList/getUpdateKey',
       }),
 
     },
@@ -127,7 +127,6 @@
       ...mapMutations({
         changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
         setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
-        changeUpdateKey: 'tasksList/CHANGE_UPDATE_KEY',
       }),
       deleteTaskMethod() {
         if (this.selectedItemTaskId !== null) {
@@ -137,11 +136,12 @@
       },
       addTaskMethod() {
         let idNewTask = Date.now();
+        this.updateKey++;
         this.addTask(idNewTask);
       },
       openEdit() {
         this.isEditTaskDialogShown = true;
-        this.changeUpdateKey(); 
+        this.updateKey++;
       },
     }
   }

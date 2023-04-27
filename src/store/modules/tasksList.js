@@ -11,7 +11,6 @@ export default {
   state: {
     tasks: [],
     selectedTaskId: null,
-    updateKey: 0, //для перерендеринга компонента Task
   },
   getters: {
     getTasks(state) {
@@ -46,9 +45,6 @@ export default {
     SAVE_TASK(state, payload) {
       state.tasks = payload;
     },
-    CHANGE_UPDATE_KEY(state) {
-      state.updateKey++;
-    },
   },
   actions: {
     async loadTasks({ commit }) {
@@ -72,7 +68,6 @@ export default {
         commit('ADD_TASK', response.data.addTask);
         commit('CHANGE_SELECTED_TASK_ID', payloadId);
         commit('oneTask/SET_ONETASK_FROM_TASKLIST', getters.getOneTask, { root: true });
-        commit('CHANGE_UPDATE_KEY');
       } catch(e) {
         console.log(e);
       }
