@@ -61,7 +61,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                       text
-                      @click="deleteTaskMethod(selectedItemTaskId)"
+                      @click="deleteTaskMethod()"
                     >
                       Да
                     </v-btn>
@@ -126,9 +126,9 @@
         changeFlagEdit: 'tasksList/CHANGE_FLAG_EDIT',
         changeUpdateKey: 'tasksList/CHANGE_UPDATE_KEY',
       }),
-      deleteTaskMethod(id) {
-        if (id !== null) {
-          this.deleteTask(id);
+      deleteTaskMethod() {
+        if (this.selectedItemTaskId !== null) {
+          this.deleteTask(this.selectedItemTaskId);
           this.cancelDialog = false;
         }
       },
