@@ -9,7 +9,7 @@
                   persistent
                   max-width="450"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-btn
                       icon
                       large
@@ -155,7 +155,7 @@
                   persistent
                   max-width="350"
                 >
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-btn
                       v-bind="attrs"
                       v-on="on"

@@ -13,7 +13,7 @@
                 max-width="1000px"
                 v-model="flagDialog"
               >
-                <template v-slot:activator="{ on, attrs }">
+                <template #activator="{ on, attrs }">
                   <v-btn
                     icon
                     large
@@ -38,7 +38,7 @@
                 persistent
                 max-width="350"
               >
-                <template v-slot:activator="{ on, attrs }">
+                <template #activator="{ on, attrs }">
                   <v-btn
                     icon
                     large
