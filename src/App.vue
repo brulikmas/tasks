@@ -11,7 +11,7 @@
               <v-dialog
                 persistent
                 max-width="1000px"
-                v-model="flagDialog"
+                v-model="isEditTaskDialogShown"
               >
                 <template #activator="{ on, attrs }">
                   <v-btn
@@ -31,7 +31,11 @@
                     <v-icon>mdi-pencil</v-icon>
                   </v-btn>
                 </template>
-                <Task :key="updateKey"></Task>
+                <Task 
+                  :key="updateKey"
+                  @cancelEditing="isEditTaskDialogShown = false"
+                >
+                </Task>
               </v-dialog>
               <v-dialog
                 v-model="isCancelDialogShown"
@@ -98,7 +102,8 @@
     },
     data() {
       return {
-        isCancelDialogShown: false, 
+        isCancelDialogShown: false,
+        isEditTaskDialogShown: false,
       }
     },
     computed: {
@@ -106,7 +111,6 @@
         tasks: 'tasksList/getTasks',
         selectedItemTaskId: 'tasksList/getSelectedTaskId',
         oneTask: 'tasksList/getOneTask',
-        flagDialog: 'tasksList/getFlagEditDialog',
         updateKey: 'tasksList/getUpdateKey',
       }),
 
@@ -123,7 +127,6 @@
       ...mapMutations({
         changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
         setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
-        changeFlagEdit: 'tasksList/CHANGE_FLAG_EDIT',
         changeUpdateKey: 'tasksList/CHANGE_UPDATE_KEY',
       }),
       deleteTaskMethod() {
@@ -137,7 +140,7 @@
         this.addTask(idNewTask);
       },
       openEdit() {
-        this.changeFlagEdit();
+        this.isEditTaskDialogShown = true;
         this.changeUpdateKey(); 
       },
     }

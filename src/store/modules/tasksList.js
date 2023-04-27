@@ -11,15 +11,11 @@ export default {
   state: {
     tasks: [],
     selectedTaskId: null,
-    flagEditDialog: false,
     updateKey: 0, //для перерендеринга компонента Task
   },
   getters: {
     getTasks(state) {
       return state.tasks;
-    },
-    getFlagEditDialog(state) {
-      return state.flagEditDialog;
     },
     getUpdateKey(state) {
       return state.updateKey;
@@ -50,9 +46,6 @@ export default {
     SAVE_TASK(state, payload) {
       state.tasks = payload;
     },
-    CHANGE_FLAG_EDIT(state) {
-      state.flagEditDialog = !state.flagEditDialog;
-    },
     CHANGE_UPDATE_KEY(state) {
       state.updateKey++;
     },
@@ -79,7 +72,6 @@ export default {
         commit('ADD_TASK', response.data.addTask);
         commit('CHANGE_SELECTED_TASK_ID', payloadId);
         commit('oneTask/SET_ONETASK_FROM_TASKLIST', getters.getOneTask, { root: true });
-        commit('CHANGE_FLAG_EDIT');
         commit('CHANGE_UPDATE_KEY');
       } catch(e) {
         console.log(e);

@@ -257,7 +257,6 @@ export default {
       deleteToDo: 'oneTask/DELETE_TODO',
       changeDoneToDo: 'oneTask/CHANGE_DONE_TODO',
       changeTextToDo: 'oneTask/CHANGE_TEXT_TODO',
-      changeFlagEdit: 'tasksList/CHANGE_FLAG_EDIT',
     }),
     ...mapActions({
       saveTask: 'tasksList/saveTask',
@@ -342,7 +341,7 @@ export default {
       this.posForAdd = this.posForSave;
       this.changeTask(this.currentTask);
       this.isCancelDialogShown = false;
-      this.changeFlagEdit();
+      this.$emit('cancelEditing');
     },
   },
 }
