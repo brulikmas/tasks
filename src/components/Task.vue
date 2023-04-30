@@ -240,10 +240,7 @@ export default {
     },
     currentTask() {
       let taskObject = {...this.actionsArray[this.posForAdd - 1]}; 
-      taskObject.todoItems = [...taskObject.todoItems];
-      for(let i = 0; i < taskObject.todoItems.length; i++) {
-        taskObject.todoItems[i] = {...taskObject.todoItems[i]}
-      };
+      taskObject.todoItems = taskObject.todoItems.map(item => ({...item}));
       return taskObject;
     },
   },
@@ -268,10 +265,8 @@ export default {
     */ 
     changeActionsArray() {
       let addNewElement = {...this.oneTask};
-      addNewElement.todoItems = [...addNewElement.todoItems];
-      for (let i = 0; i < addNewElement.todoItems.length; i++) {
-        addNewElement.todoItems[i] = {...addNewElement.todoItems[i]};
-      };
+      addNewElement.todoItems = addNewElement.todoItems.map(item => ({...item}));
+      
       if (this.posForAdd === this.actionsArray.length) {
         this.posForAdd += 1;
         this.actionsArray.splice(this.posForAdd, this.deleteCountElements, addNewElement);
