@@ -62,7 +62,7 @@
 
 <script>
   import CheckBox from './CheckBox.vue';
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapGetters, mapMutations, mapState } from 'vuex';
 
   export default {
     name: 'TaskList',
@@ -70,9 +70,11 @@
       CheckBox,
     },
     computed: {
+      ...mapState('tasksList', {
+        tasks: 'tasks',
+        selectedTaskId: 'selectedTaskId',
+      }),
       ...mapGetters({
-        tasks: 'tasksList/getTasks',
-        selectedTaskId: 'tasksList/getSelectedTaskId',
         oneTask: 'tasksList/getOneTask',
       })
     },

@@ -12,15 +12,6 @@ export default {
     selectedTaskId: null,
   },
   getters: {
-    getTasks(state) {
-      return state.tasks;
-    },
-    getUpdateKey(state) {
-      return state.updateKey;
-    },
-    getSelectedTaskId(state) {
-      return state.selectedTaskId;
-    },
     getOneTask(state) {
       const finded = state.tasks.find(item => item.id === state.selectedTaskId);
       return finded; 

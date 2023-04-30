@@ -197,7 +197,7 @@
 <script>
 
 import CheckBox from './CheckBox.vue';
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import { mapActions, mapState, mapMutations } from 'vuex';
 import debounce from 'debounce';
 
 export default {
@@ -232,8 +232,8 @@ export default {
     document.removeEventListener('keydown', this.keyUpHandler); 
   },
   computed: {
-    ...mapGetters({
-      oneTask: 'oneTask/getTask',
+    ...mapState('oneTask', {
+      oneTask: 'oneTask',
     }),
     //свойство для подсчета количества удаляемых элементов в массиве действий
     deleteCountElements() {

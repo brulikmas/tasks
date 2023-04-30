@@ -38,7 +38,7 @@
                 </Task>
               </v-dialog>
               <v-dialog
-                v-model="isCancelDialogShown"
+                v-model="isDeleteDialogShown"
                 persistent
                 max-width="350"
               >
@@ -71,7 +71,7 @@
                     </v-btn>
                     <v-btn
                       text
-                      @click="isCancelDialogShown = false"
+                      @click="isDeleteDialogShown = false"
                     >
                       Нет
                     </v-btn>
@@ -92,7 +92,7 @@
 <script>
   import Task from './components/Task.vue';
   import TaskList from './components/TaskList.vue';
-  import { mapActions, mapGetters, mapMutations } from 'vuex';
+  import { mapActions, mapMutations, mapState } from 'vuex';
 
   export default {
     name: 'App',
@@ -102,18 +102,15 @@
     },
     data() {
       return {
-        isCancelDialogShown: false,
+        isDeleteDialogShown: false,
         isEditTaskDialogShown: false,
         updateKey: 0,
       }
     },
     computed: {
-      ...mapGetters({
-        tasks: 'tasksList/getTasks',
-        selectedItemTaskId: 'tasksList/getSelectedTaskId',
-        oneTask: 'tasksList/getOneTask',
+      ...mapState('tasksList', {
+        selectedItemTaskId: 'selectedTaskId',
       }),
-
     },
     created() {
       this.loadTasks();
@@ -124,13 +121,12 @@
         deleteTask: 'tasksList/deleteTask'
       }),
       ...mapMutations({
-        changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
         setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
       }),
       deleteTaskFromTaskList() {
         if (this.selectedItemTaskId !== null) {
           this.deleteTask(this.selectedItemTaskId);
-          this.isCancelDialogShown = false;
+          this.isDeleteDialogShown = false;
         }
       },
       addTask() {

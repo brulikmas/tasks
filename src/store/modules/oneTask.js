@@ -3,11 +3,6 @@ export default {
   state: {
     oneTask: {},
   },
-  getters: {
-    getTask(state) {
-      return state.oneTask;
-    }
-  },
   mutations: {
     SET_ONETASK_FROM_TASKLIST(state, oneTaskFromTaskList) {
       state.oneTask = structuredClone(oneTaskFromTaskList);
