@@ -1,6 +1,5 @@
 import { 
   todoItemsQuery, 
-  addItemMutation,
   deleteItemMutation,
   saveTaskMutation,
 } from '../../graphql/queries';
@@ -32,9 +31,6 @@ export default {
     LOAD_TASKS(state, payload) {
       state.tasks = payload;
     },
-    ADD_TASK(state, payload) { 
-      state.tasks = payload;
-    },
     DELETE_TASK(state, payload) {
       state.tasks = payload;
       state.selectedTaskId = null;
@@ -53,21 +49,6 @@ export default {
           query: todoItemsQuery,
         });
         commit('LOAD_TASKS', response.data.todoTasks);
-      } catch(e) {
-        console.log(e);
-      }
-    },
-    async addNewTask({ commit, getters }, payloadId) {
-      try {
-        const response = await apollo.mutate({
-          mutation: addItemMutation,
-          variables: {
-            idTask: payloadId,
-          }
-        });
-        commit('ADD_TASK', response.data.addTask);
-        commit('CHANGE_SELECTED_TASK_ID', payloadId);
-        commit('oneTask/SET_ONETASK_FROM_TASKLIST', getters.getOneTask, { root: true });
       } catch(e) {
         console.log(e);
       }

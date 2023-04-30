@@ -18,7 +18,7 @@
                     icon
                     large
                     color="green"
-                    @click="addTaskMethod()"
+                    @click="addTask()"
                   >
                     <v-icon>mdi-plus-box</v-icon>
                   </v-btn>
@@ -121,7 +121,6 @@
     methods: {
       ...mapActions({
         loadTasks: 'tasksList/loadTasks',
-        addTask: 'tasksList/addNewTask',
         deleteTask: 'tasksList/deleteTask'
       }),
       ...mapMutations({
@@ -134,14 +133,25 @@
           this.isCancelDialogShown = false;
         }
       },
-      addTaskMethod() {
-        let idNewTask = Date.now();
+      addTask() {
+        const newTask = {
+          __typename: 'Task',
+          id: Date.now(),
+          name: `Введите задание`,
+          todoItems: [{
+            __typename: 'ToDo',
+            id: Date.now(),
+            text: '',
+            done: false,
+          }],
+        };
+        this.setOneTask(newTask);
         this.updateKey++;
-        this.addTask(idNewTask);
+        this.isEditTaskDialogShown = true;
       },
       openEdit() {
-        this.isEditTaskDialogShown = true;
         this.updateKey++;
+        this.isEditTaskDialogShown = true;
       },
     }
   }

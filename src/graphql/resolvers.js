@@ -17,7 +17,6 @@ export const typeDefs = gql`
   }
   type Mutation {
     deleteTask(idTask: ID!): [Task]
-    addTask(idTask: ID!): [Task]
     saveTask(task: Task!, idTask: ID!): [Task]
   }
 `;
@@ -35,25 +34,15 @@ export const resolvers = {
       localStorage.storageTasks = JSON.stringify(todoTasks);
       return todoTasks;
     },
-    addTask: (_, { idTask }) => {
-      const newTask = {
-        __typename: 'Task',
-        id: idTask,
-        name: `Введите задание`,
-        todoItems: [{
-          __typename: 'ToDo',
-          id: Date.now(),
-          text: '',
-          done: false,
-        }],
-      };
-      todoTasks.push(newTask);
-      localStorage.storageTasks = JSON.stringify(todoTasks);
-      return todoTasks;
-    },
     saveTask: (_, { task, idTask }) => {
       const currentItem = todoTasks.find(item => item.id === idTask);
-      todoTasks.splice(todoTasks.indexOf(currentItem), 1, task);
+
+      if (currentItem) {
+        todoTasks.splice(todoTasks.indexOf(currentItem), 1, task);
+      } else {
+        todoTasks.push(task);
+      };
+
       localStorage.storageTasks = JSON.stringify(todoTasks);
       return todoTasks;
     },
