@@ -15,7 +15,6 @@ if (check === null) {
     todoTasks.splice(0, 1, startTask);
     localStorage.storageTasks = JSON.stringify(todoTasks);
 } else {
-  let storageTasks = JSON.parse(localStorage.storageTasks);
+  let storageTasks = JSON.parse(check);
   todoTasks.splice(0, 1, ...storageTasks);
 }
-
