@@ -21,16 +21,10 @@ export default {
     //в payload во всех мутациях всегда получаем массив заданий
     LOAD_TASKS(state, payload) {
       state.tasks = payload;
-    },
-    DELETE_TASK(state, payload) {
-      state.tasks = payload;
       state.selectedTaskId = null;
     },
     CHANGE_SELECTED_TASK_ID(state, id) {
       state.selectedTaskId = id;
-    },
-    SAVE_TASK(state, payload) {
-      state.tasks = payload;
     },
   },
   actions: {
@@ -52,7 +46,7 @@ export default {
             idTask: payloadId,
           }
         });
-        commit('DELETE_TASK', response.data.deleteTask);
+        commit('LOAD_TASKS', response.data.deleteTask);
       } catch(e) {
         console.log(e);
       }
@@ -66,7 +60,7 @@ export default {
             idTask: payload.savedId,
           },
         });
-        commit('SAVE_TASK', response.data.saveTask);
+        commit('LOAD_TASKS', response.data.saveTask);
       } catch(e) {
         console.log(e);
       }
