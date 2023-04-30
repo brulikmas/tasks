@@ -65,7 +65,7 @@
                     <v-spacer></v-spacer>
                     <v-btn
                       text
-                      @click="deleteTaskMethod()"
+                      @click="deleteTaskFromTaskList()"
                     >
                       Да
                     </v-btn>
@@ -127,7 +127,7 @@
         changeSelectedTaskId: 'tasksList/CHANGE_SELECTED_TASK_ID',
         setOneTask: 'oneTask/SET_ONETASK_FROM_TASKLIST',
       }),
-      deleteTaskMethod() {
+      deleteTaskFromTaskList() {
         if (this.selectedItemTaskId !== null) {
           this.deleteTask(this.selectedItemTaskId);
           this.isCancelDialogShown = false;
