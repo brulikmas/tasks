@@ -146,7 +146,7 @@
                 <v-btn
                   color="green"
                   class="white--text mr-3"
-                  @click="saveChanges(oneTask, oneTask.id)"
+                  @click="saveChanges(oneTask)"
                 >
                   Сохранить
                 </v-btn>
@@ -331,11 +331,11 @@ export default {
         this.repeatLastChange();
       };
     },
-    saveChanges(taskForSave, taskId) {
+    saveChanges(taskForSave) {
       //меняем позицию сохрания, чтобы при нажатии кнопки "отмена",
       //был сброс данных до этой позиции
       this.posForSave = this.posForAdd;
-      this.saveTask({ savedTask: taskForSave, savedId: taskId});
+      this.saveTask(taskForSave);
     },
     cancelChanges() {
       this.actionsArray.splice(this.posForSave, this.actionsArray.length);

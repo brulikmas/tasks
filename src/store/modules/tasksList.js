@@ -56,8 +56,7 @@ export default {
         const response = await apollo.mutate({
           mutation: saveTaskMutation,
           variables: {
-            task: payload.savedTask,
-            idTask: payload.savedId,
+            task: payload,
           },
         });
         commit('LOAD_TASKS', response.data.saveTask);

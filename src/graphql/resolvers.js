@@ -17,7 +17,7 @@ export const typeDefs = gql`
   }
   type Mutation {
     deleteTask(idTask: ID!): [Task]
-    saveTask(task: Task!, idTask: ID!): [Task]
+    saveTask(task: Task!): [Task]
   }
 `;
 
@@ -34,8 +34,8 @@ export const resolvers = {
       localStorage.storageTasks = JSON.stringify(todoTasks);
       return todoTasks;
     },
-    saveTask: (_, { task, idTask }) => {
-      const currentItem = todoTasks.find(item => item.id === idTask);
+    saveTask: (_, { task }) => {
+      const currentItem = todoTasks.find(item => item.id === task.id);
 
       if (currentItem) {
         todoTasks.splice(todoTasks.indexOf(currentItem), 1, task);

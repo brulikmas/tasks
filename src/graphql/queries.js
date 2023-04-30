@@ -28,8 +28,8 @@ export const deleteItemMutation = gql`
   }
 `;
 export const saveTaskMutation = gql`
-  mutation($task: Task!, $idTask: ID!) {
-    saveTask(task: $task, idTask: $idTask) @client {
+  mutation($task: Task!) {
+    saveTask(task: $task) @client {
       id
       name
       todoItems {
