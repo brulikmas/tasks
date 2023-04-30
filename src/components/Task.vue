@@ -218,9 +218,6 @@ export default {
   emits: ['cancelEditing'],
   created() {
     this.changeActionsArray();
-    //Задержка, чтобы функция срабатывала не сразу, при вводе текста
-    this.changeTaskTitle = debounce(this.changeTaskTitle, 400); 
-    this.changeToDoItemText = debounce(this.changeToDoItemText, 400);
   },
   mounted() {
     //слушаем событие нажатия клавиши и запускаем функцию, необходимо для
@@ -284,10 +281,11 @@ export default {
         this.posForAdd += 1;
       }
     },
-    changeTaskTitle(titleTaskValue) {
+    //Задержка, чтобы функция срабатывала не сразу, при вводе текста
+    changeTaskTitle: debounce(function(titleTaskValue) {
       this.changeTaskName(titleTaskValue);
       this.changeActionsArray();
-    }, 
+    }, 400),
     changeToDoItemDone(id) {
       this.changeDoneToDo(id);
       this.changeActionsArray();
@@ -303,10 +301,11 @@ export default {
       this.addToDo();
       this.changeActionsArray();
     },
-    changeToDoItemText(id, titleText) {
+    //Задержка, чтобы функция срабатывала не сразу, при вводе текста
+    changeToDoItemText: debounce(function(id, titleText) {
       this.changeTextToDo({id: id, text: titleText});
       this.changeActionsArray();
-    },
+    }, 400),
     cancelLastChange() {
       if (this.posForAdd > 1) {
         this.posForAdd -= 1;
