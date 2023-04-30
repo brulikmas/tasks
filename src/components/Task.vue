@@ -215,6 +215,7 @@ export default {
       posForSave: 1,
     }
   },
+  emits: ['cancelEditing'],
   created() {
     this.changeActionsArray();
     //Задержка, чтобы функция срабатывала не сразу, при вводе текста

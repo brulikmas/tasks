@@ -42,6 +42,7 @@ export default {
     doneToDo: Boolean,
     disabled: Boolean,
   },
+  emits: ['changeTitle', 'selectItemInput'],
 }
 </script>
 
