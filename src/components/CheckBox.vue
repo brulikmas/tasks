@@ -1,6 +1,6 @@
 <template>
   <div class="radius pt-2 pl-2" @click="$emit('selectItemInput')">
-    <v-form :disabled="activated">
+    <v-form :disabled="disabled">
       <v-row 
         justify="center"  
         class="mt-2"
@@ -40,16 +40,8 @@ export default {
   props: {
     title: String,
     doneToDo: Boolean,
-    activated: Boolean,
+    disabled: Boolean,
   },
-  data() {
-    return {
-     
-    }
-  },
-  methods: {
-
-  }
 }
 </script>
 

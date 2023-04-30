@@ -28,7 +28,7 @@
             :key="checkItem.id"
             :title="checkItem.text"
             :doneToDo="checkItem.done" 
-            :activated="true"
+            :disabled="true"
           >
           </CheckBox>
           <v-tooltip
@@ -68,11 +68,6 @@
     name: 'TaskList',
     components: {
       CheckBox,
-    },
-    data() {
-      return {
-
-      }
     },
     computed: {
       ...mapGetters({
