@@ -7,7 +7,7 @@
           <v-btn
             icon
             large
-            @click.stop="isCancelDialogShown = true"
+            @click.stop="closeTaskEditing()"
           >
             <v-icon>mdi-close-circle-outline</v-icon>
           </v-btn>
@@ -96,6 +96,7 @@
                 <v-spacer></v-spacer>
                 <v-btn
                   icon
+                  :disabled="isUndoRedoDisabled"
                   @click="cancelLastChange()"
                 >
                   <v-icon>
@@ -105,6 +106,7 @@
                 <v-btn
                   icon
                   class="mr-3"
+                  :disabled="isUndoRedoDisabled"
                   @click="repeatLastChange()"
                 >
                   <v-icon>
@@ -127,6 +129,7 @@
                     <v-btn
                       v-bind="attrs"
                       v-on="on"
+                      :disabled="isTaskSaved"
                     >
                       Отмена
                     </v-btn>
@@ -210,6 +213,12 @@ export default {
       taskObject.todoItems = taskObject.todoItems.map(item => ({...item}));
       return taskObject;
     },
+    isUndoRedoDisabled() {
+      return this.actionsArray.length === 1;
+    },
+    isTaskSaved() {
+      return this.posForSave === this.posForAdd && this.actionsArray.length > 1;
+    }
   },
   methods: {
     ...mapMutations({
@@ -304,6 +313,13 @@ export default {
       this.changeTask(this.currentTask);
       this.isCancelDialogShown = false;
       this.$emit('cancelEditing');
+    },
+    closeTaskEditing() {
+      if (this.isTaskSaved) {
+        this.cancelChanges();
+      } else {
+        this.isCancelDialogShown = true;
+      }
     },
   },
 }
